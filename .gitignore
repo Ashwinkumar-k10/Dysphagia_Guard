@@ -1,0 +1,24 @@
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Android
+android/build/
+android/.gradle/
+android/app/build/
+android/local.properties
+*.apk
+*.aab
+
+# Firmware (PlatformIO)
+firmware/.pio/
+firmware/.vscode/
+
+# Flutter (if it's an SDK folder, ignore it entirely, otherwise ignore build)
+flutter/
+
+# General
+*.log
+.DS_Store
+*.zip

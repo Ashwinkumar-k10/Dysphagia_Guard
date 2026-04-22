@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Live Monitor Screen (Safe State)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700;900&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#001f27",
+                        "on-tertiary": "#4d2600",
+                        "primary-fixed": "#b3ebff",
+                        "inverse-primary": "#00677d",
+                        "secondary-fixed-dim": "#4ae183",
+                        "on-error-container": "#ffdad6",
+                        "secondary-container": "#06bb63",
+                        "on-primary-container": "#00414f",
+                        "error": "#ffb4ab",
+                        "inverse-surface": "#d6e4f9",
+                        "surface-variant": "#283646",
+                        "tertiary-fixed-dim": "#ffb77d",
+                        "on-error": "#690005",
+                        "primary-container": "#00b4d8",
+                        "primary-fixed-dim": "#4cd6fb",
+                        "secondary": "#4ae183",
+                        "surface-container-highest": "#283646",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-secondary-container": "#00431f",
+                        "on-background": "#d6e4f9",
+                        "on-secondary": "#003919",
+                        "background": "#061423",
+                        "tertiary": "#ffb77d",
+                        "on-secondary-fixed-variant": "#005228",
+                        "tertiary-container": "#eb8f3b",
+                        "inverse-on-surface": "#243141",
+                        "surface-dim": "#061423",
+                        "on-surface": "#d6e4f9",
+                        "surface-tint": "#4cd6fb",
+                        "surface-container-high": "#1e2b3b",
+                        "on-tertiary-container": "#5d2f00",
+                        "error-container": "#93000a",
+                        "tertiary-fixed": "#ffdcc3",
+                        "surface-container-lowest": "#020f1e",
+                        "on-surface-variant": "#bcc9ce",
+                        "on-secondary-fixed": "#00210c",
+                        "primary": "#4cd6fb",
+                        "surface-bright": "#2d3a4a",
+                        "on-primary-fixed-variant": "#004e5f",
+                        "on-primary": "#003642",
+                        "on-tertiary-fixed": "#2f1500",
+                        "surface-container-low": "#0f1c2c",
+                        "surface": "#061423",
+                        "outline": "#869398",
+                        "outline-variant": "#3d494d",
+                        "surface-container": "#132030",
+                        "on-tertiary-fixed-variant": "#6e3900"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Public Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .waveform-scroll {
+            background-image: repeating-linear-gradient(to right, transparent, transparent 10px, rgba(76, 214, 251, 0.1) 10px, rgba(76, 214, 251, 0.1) 11px);
+        }
+        .pulse-safe {
+            box-shadow: 0 0 24px rgba(74, 225, 131, 0.15);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body min-h-screen pb-32 pt-20">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-[20px] shadow-[0px_32px_48px_rgba(76,214,251,0.08)] bg-slate-900/50">
+<div class="flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-cyan-400">sensors</span>
+<h1 class="font-['Public_Sans'] font-bold tracking-tight text-sm uppercase text-lg font-black text-cyan-400 tracking-widest">DysphagiaGuard</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span class="text-xs text-on-surface-variant font-label">Connected</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1 bg-surface-container-highest rounded-full border border-outline-variant/15">
+<span class="material-symbols-outlined text-sm text-primary">timer</span>
+<span class="text-sm font-label text-cyan-400 font-bold tracking-widest">00:42:15</span>
+</div>
+</div>
+</div>
+</header>
+<main class="px-4 max-w-md mx-auto space-y-6">
+<!-- Hero Status Card (SAFE) -->
+<div class="bg-surface-container-high rounded-3xl p-6 pulse-safe relative overflow-hidden flex flex-col items-center justify-center min-h-[160px]">
+<div class="absolute inset-0 bg-secondary/5 opacity-50"></div>
+<span class="material-symbols-outlined text-5xl text-secondary mb-2" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<h2 class="font-headline text-2xl font-bold text-on-surface tracking-tight">SAFE</h2>
+<p class="text-on-surface-variant text-sm font-label mt-1 uppercase tracking-widest">Safe Swallow Detected</p>
+</div>
+<!-- Stats Row (Bento Style) -->
+<div class="grid grid-cols-3 gap-3">
+<div class="bg-surface-container-low rounded-2xl p-4 flex flex-col justify-between h-24">
+<span class="text-xs text-on-surface-variant font-label">Total<br/>Swallows</span>
+<span class="font-headline text-2xl font-bold text-on-surface">12</span>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-4 flex flex-col justify-between h-24">
+<span class="text-xs text-on-surface-variant font-label">Unsafe<br/>Events</span>
+<span class="font-headline text-2xl font-bold text-tertiary">2</span>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-4 flex flex-col justify-between h-24">
+<span class="text-xs text-on-surface-variant font-label">Last<br/>Swallow</span>
+<span class="font-headline text-lg font-bold text-on-surface">14s ago</span>
+</div>
+</div>
+<!-- Live Waveform Panel -->
+<div class="bg-surface-container-high rounded-2xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-headline text-sm font-bold tracking-widest text-on-surface-variant uppercase">Acoustic Waveform</h3>
+<span class="flex h-2 w-2 rounded-full bg-primary relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+</span>
+</div>
+<div class="h-32 bg-surface-container-lowest rounded-xl overflow-hidden relative border border-outline-variant/15">
+<div class="absolute inset-0 waveform-scroll"></div>
+<!-- Simulated Waveform Line using SVG for precision -->
+<svg class="w-full h-full absolute inset-0 text-primary drop-shadow-[0_0_8px_rgba(76,214,251,0.5)]" preserveaspectratio="none" viewbox="0 0 400 100">
+<path d="M0,50 L50,50 L60,40 L70,80 L80,20 L90,60 L100,50 L200,50 L210,45 L220,55 L230,50 L300,50 L310,30 L320,90 L330,10 L340,70 L350,50 L400,50" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Vibration Intensity Chart -->
+<div class="bg-surface-container-high rounded-2xl p-5 flex items-center justify-between shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+<div class="flex flex-col">
+<h3 class="font-headline text-sm font-bold tracking-widest text-on-surface-variant uppercase">Vibration Intensity</h3>
+<span class="text-xs text-on-surface-variant/70 mt-1">Laryngeal Movement</span>
+</div>
+<div class="flex items-end gap-1.5 h-10">
+<div class="w-3 bg-surface-container-highest rounded-t-sm h-full border border-outline-variant/15"></div>
+<div class="w-3 bg-surface-container-highest rounded-t-sm h-3/4 border border-outline-variant/15"></div>
+<div class="w-3 bg-primary rounded-t-sm h-1/2 drop-shadow-[0_0_4px_rgba(76,214,251,0.5)]"></div>
+<div class="w-3 bg-surface-container-highest rounded-t-sm h-1/4 border border-outline-variant/15"></div>
+<div class="w-3 bg-surface-container-highest rounded-t-sm h-[10%] border border-outline-variant/15"></div>
+</div>
+</div>
+</main>
+<!-- Bottom Persistent Toolbar (Actions) -->
+<div class="fixed bottom-24 w-full px-4 max-w-md mx-auto left-0 right-0 z-40">
+<div class="flex items-center gap-3 bg-surface-container-highest/80 backdrop-blur-xl p-2 rounded-2xl shadow-[0_16px_32px_rgba(0,0,0,0.5)] border border-outline-variant/15">
+<button class="flex-1 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl font-body text-sm font-bold tracking-wide shadow-lg">
+                End Session
+            </button>
+<button class="p-3 bg-surface-container-low rounded-xl text-on-surface hover:bg-surface-container transition-colors border border-outline-variant/15 flex items-center justify-center w-12 h-12">
+<span class="material-symbols-outlined">volume_off</span>
+</button>
+<button class="p-3 bg-surface-container-low rounded-xl text-on-surface hover:bg-surface-container transition-colors border border-outline-variant/15 flex items-center justify-center w-12 h-12">
+<span class="material-symbols-outlined">notifications_paused</span>
+</button>
+</div>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-3xl bg-slate-950/80 backdrop-blur-[20px] shadow-[0px_-24px_48px_rgba(0,0,0,0.4)] bg-slate-900 md:hidden">
+<div class="flex justify-around items-center w-full px-4 pt-3 pb-8">
+<!-- Active: Monitor -->
+<button class="flex flex-col items-center justify-center bg-cyan-500/20 text-cyan-400 rounded-2xl px-5 py-2 active:scale-90 duration-150 transition-all">
+<span class="material-symbols-outlined mb-1 text-xl" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-[0.05em]">Monitor</span>
+</button>
+<!-- Inactive: Alerts -->
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-slate-800/50 transition-all active:scale-90 duration-150 px-5 py-2 rounded-2xl">
+<span class="material-symbols-outlined mb-1 text-xl">notifications</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-[0.05em]">Alerts</span>
+</button>
+<!-- Inactive: Report -->
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-slate-800/50 transition-all active:scale-90 duration-150 px-5 py-2 rounded-2xl">
+<span class="material-symbols-outlined mb-1 text-xl">description</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-[0.05em]">Report</span>
+</button>
+<!-- Inactive: Settings -->
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-slate-800/50 transition-all active:scale-90 duration-150 px-5 py-2 rounded-2xl">
+<span class="material-symbols-outlined mb-1 text-xl">settings</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-[0.05em]">Settings</span>
+</button>
+</div>
+</nav>
+</body></html>

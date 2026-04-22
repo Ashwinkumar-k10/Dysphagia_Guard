@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DysphagiaGuard - Connection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700;900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed": "#001f27",
+                      "on-tertiary": "#4d2600",
+                      "primary-fixed": "#b3ebff",
+                      "inverse-primary": "#00677d",
+                      "secondary-fixed-dim": "#4ae183",
+                      "on-error-container": "#ffdad6",
+                      "secondary-container": "#06bb63",
+                      "on-primary-container": "#00414f",
+                      "error": "#ffb4ab",
+                      "inverse-surface": "#d6e4f9",
+                      "surface-variant": "#283646",
+                      "tertiary-fixed-dim": "#ffb77d",
+                      "on-error": "#690005",
+                      "primary-container": "#00b4d8",
+                      "primary-fixed-dim": "#4cd6fb",
+                      "secondary": "#4ae183",
+                      "surface-container-highest": "#283646",
+                      "secondary-fixed": "#6bfe9c",
+                      "on-secondary-container": "#00431f",
+                      "on-background": "#d6e4f9",
+                      "on-secondary": "#003919",
+                      "background": "#061423",
+                      "tertiary": "#ffb77d",
+                      "on-secondary-fixed-variant": "#005228",
+                      "tertiary-container": "#eb8f3b",
+                      "inverse-on-surface": "#243141",
+                      "surface-dim": "#061423",
+                      "on-surface": "#d6e4f9",
+                      "surface-tint": "#4cd6fb",
+                      "surface-container-high": "#1e2b3b",
+                      "on-tertiary-container": "#5d2f00",
+                      "error-container": "#93000a",
+                      "tertiary-fixed": "#ffdcc3",
+                      "surface-container-lowest": "#020f1e",
+                      "on-surface-variant": "#bcc9ce",
+                      "on-secondary-fixed": "#00210c",
+                      "primary": "#4cd6fb",
+                      "surface-bright": "#2d3a4a",
+                      "on-primary-fixed-variant": "#004e5f",
+                      "on-primary": "#003642",
+                      "on-tertiary-fixed": "#2f1500",
+                      "surface-container-low": "#0f1c2c",
+                      "surface": "#061423",
+                      "outline": "#869398",
+                      "outline-variant": "#3d494d",
+                      "surface-container": "#132030",
+                      "on-tertiary-fixed-variant": "#6e3900"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Public Sans", "sans-serif"
+                      ],
+                      "body": [
+                              "Inter", "sans-serif"
+                      ],
+                      "label": [
+                              "Inter", "sans-serif"
+                      ]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        /* Ambient Background Texture */
+        .bg-ambient {
+            background-image: radial-gradient(circle at 50% 50%, rgba(76, 214, 251, 0.05) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 20%, rgba(76, 214, 251, 0.03) 0%, transparent 30%);
+        }
+        
+        /* Gradient Button */
+        .btn-gradient {
+            background: linear-gradient(135deg, theme('colors.primary'), theme('colors.primary-container'));
+        }
+        
+        /* Pulse Animation Fallback (since animations are generally avoided, but simulating the ring state) */
+        .pulse-ring-static {
+            box-shadow: 0 0 0 16px rgba(76, 214, 251, 0.1), 0 0 0 32px rgba(76, 214, 251, 0.05);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-ambient">
+<!-- Note: TopAppBar and BottomNavBar are SUPPRESSED on this linear/transactional splash screen as per the Semantic Shell Mandate -->
+<!-- Main Canvas -->
+<main class="relative z-10 w-full max-w-md px-6 flex flex-col items-center justify-center h-full gap-12">
+<!-- Header Section -->
+<div class="text-center flex flex-col items-center gap-4">
+<div class="bg-surface-container-high p-4 rounded-full shadow-[0px_32px_48px_rgba(76,214,251,0.08)] mb-2 pulse-ring-static">
+<span class="material-symbols-outlined text-primary text-5xl" style="font-variation-settings: 'FILL' 1;">
+                    sensors
+                </span>
+</div>
+<h1 class="font-headline font-black text-4xl text-primary tracking-tight">DysphagiaGuard</h1>
+<p class="font-label text-on-surface-variant text-sm tracking-widest uppercase">Real-Time Swallowing Monitor</p>
+</div>
+<!-- Connection Status Card (Surface Level 2) -->
+<div class="w-full bg-surface-container-high rounded-[24px] p-8 flex flex-col items-center justify-center shadow-[0px_32px_48px_rgba(76,214,251,0.05)] border border-outline-variant/15">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-4 opacity-80" data-icon="wifi_tethering">
+                wifi_tethering
+            </span>
+<h2 class="font-headline font-bold text-lg text-on-surface text-center mb-2">Connecting to device hotspot…</h2>
+<p class="font-body text-sm text-on-surface-variant text-center">Searching for local medical network</p>
+</div>
+<!-- Action Section -->
+<div class="w-full flex flex-col gap-4 mt-8">
+<button class="w-full btn-gradient text-on-primary font-headline font-bold text-sm py-4 px-6 rounded-lg shadow-[0px_16px_32px_rgba(76,214,251,0.15)] hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="wifi">wifi</span>
+                Connect to DysphagiaGuard Wi-Fi
+            </button>
+<p class="font-label text-xs text-on-surface-variant text-center opacity-70 px-4">
+                Ensure phone is connected to <br/><span class="font-mono text-primary-fixed-dim/80">DysphagiaGuard-AP</span> network
+            </p>
+</div>
+</main>
+<!-- Decorative Graphic Background -->
+<div aria-hidden="true" class="absolute inset-0 z-0 pointer-events-none opacity-20" data-alt="Deep space medical abstract, subtle glowing cyan data streams and waveform patterns on dark navy background, minimal and highly technical" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBdth_ItcX8kzRequyIANdJxz9eEZqiOU0X57CFOa7N7V43-EqUH2gjPWG_VAvf6c_pvmb9GQHbp308Rukkz398rxQexopZwTjYD6sr02JigHr7H7GEaOYs-573_AOaWLI8U3RM3tQ1Jz3OGoNKxPC7HultShDp1AqGRhF7eoKGxY7X_XllRwc-OiKQKXYVM2gwlEKjFn9qe5QSV_yA0LZ9NqQM4rn4Qfg47gTDCfdvcmoLYwYZp5ShD2uUnI_IpoXEjtGkmjyFGaI'); background-size: cover; background-position: center; mix-blend-mode: screen;">
+</div>
+</body></html>

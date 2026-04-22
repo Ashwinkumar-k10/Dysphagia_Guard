@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DysphagiaGuard - Session Report</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700;800;900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#001f27",
+                        "on-tertiary": "#4d2600",
+                        "primary-fixed": "#b3ebff",
+                        "inverse-primary": "#00677d",
+                        "secondary-fixed-dim": "#4ae183",
+                        "on-error-container": "#ffdad6",
+                        "secondary-container": "#06bb63",
+                        "on-primary-container": "#00414f",
+                        "error": "#ffb4ab",
+                        "inverse-surface": "#d6e4f9",
+                        "surface-variant": "#283646",
+                        "tertiary-fixed-dim": "#ffb77d",
+                        "on-error": "#690005",
+                        "primary-container": "#00b4d8",
+                        "primary-fixed-dim": "#4cd6fb",
+                        "secondary": "#4ae183",
+                        "surface-container-highest": "#283646",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-secondary-container": "#00431f",
+                        "on-background": "#d6e4f9",
+                        "on-secondary": "#003919",
+                        "background": "#061423",
+                        "tertiary": "#ffb77d",
+                        "on-secondary-fixed-variant": "#005228",
+                        "tertiary-container": "#eb8f3b",
+                        "inverse-on-surface": "#243141",
+                        "surface-dim": "#061423",
+                        "on-surface": "#d6e4f9",
+                        "surface-tint": "#4cd6fb",
+                        "surface-container-high": "#1e2b3b",
+                        "on-tertiary-container": "#5d2f00",
+                        "error-container": "#93000a",
+                        "tertiary-fixed": "#ffdcc3",
+                        "surface-container-lowest": "#020f1e",
+                        "on-surface-variant": "#bcc9ce",
+                        "on-secondary-fixed": "#00210c",
+                        "primary": "#4cd6fb",
+                        "surface-bright": "#2d3a4a",
+                        "on-primary-fixed-variant": "#004e5f",
+                        "on-primary": "#003642",
+                        "on-tertiary-fixed": "#2f1500",
+                        "surface-container-low": "#0f1c2c",
+                        "surface": "#061423",
+                        "outline": "#869398",
+                        "outline-variant": "#3d494d",
+                        "surface-container": "#132030",
+                        "on-tertiary-fixed-variant": "#6e3900"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Public Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: theme('colors.background'); color: theme('colors.on-background'); margin: 0; padding-top: 4rem; padding-bottom: 5rem; }
+        h1, h2, h3, h4, h5, h6, .headline { font-family: 'Public Sans', sans-serif; }
+        .glass-panel { background-color: rgba(30, 43, 59, 0.6); backdrop-filter: blur(20px); }
+        .ghost-border { border: 1px solid rgba(61, 73, 77, 0.15); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-[20px] shadow-[0px_32px_48px_rgba(76,214,251,0.08)] bg-slate-900/50">
+<div class="flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-cyan-400">sensors</span>
+<span class="font-['Public_Sans'] font-bold tracking-tight text-sm uppercase text-lg font-black text-cyan-400 tracking-widest text-cyan-400">DysphagiaGuard</span>
+</div>
+<div>
+<span class="font-['Public_Sans'] font-bold tracking-tight text-sm uppercase text-cyan-400">00:42</span>
+</div>
+</div>
+</header>
+<main class="flex-grow p-4 md:p-6 lg:p-8 space-y-6 max-w-4xl mx-auto w-full">
+<!-- Header -->
+<div class="mb-8">
+<h1 class="headline text-2xl md:text-3xl font-bold text-on-surface">Session Report — John Doe</h1>
+<p class="text-on-surface-variant text-sm mt-1">Oct 26, 2023 • 14:30 - 15:15</p>
+</div>
+<!-- Summary Card -->
+<div class="bg-surface-container-high rounded-[24px] p-6 relative overflow-hidden ghost-border">
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-error/10 rounded-full blur-2xl"></div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
+<div class="flex flex-col">
+<span class="text-on-surface-variant text-xs uppercase tracking-wider mb-1">Duration</span>
+<span class="headline text-3xl font-extrabold text-on-surface">45<span class="text-lg text-on-surface-variant font-normal">m</span></span>
+</div>
+<div class="flex flex-col">
+<span class="text-on-surface-variant text-xs uppercase tracking-wider mb-1">Total Swallows</span>
+<span class="headline text-3xl font-extrabold text-on-surface">124</span>
+</div>
+<div class="flex flex-col">
+<span class="text-on-surface-variant text-xs uppercase tracking-wider mb-1">Safe</span>
+<span class="headline text-3xl font-extrabold text-secondary flex items-baseline gap-1">112 <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span></span>
+</div>
+<div class="flex flex-col">
+<span class="text-on-surface-variant text-xs uppercase tracking-wider mb-1">Unsafe</span>
+<span class="headline text-3xl font-extrabold text-error flex items-baseline gap-1">12 <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">warning</span></span>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant/15 flex justify-between items-end">
+<div>
+<h3 class="text-sm font-semibold text-on-surface mb-2">Unsafe Event Rate</h3>
+<div class="flex items-center gap-3">
+<div class="bg-surface-container-highest h-3 w-48 rounded-full overflow-hidden flex">
+<div class="bg-secondary h-full" style="width: 90.3%"></div>
+<div class="bg-error h-full" style="width: 9.7%"></div>
+</div>
+<span class="text-xs text-on-surface-variant">9.7%</span>
+</div>
+</div>
+<div class="bg-tertiary-container/20 text-tertiary px-3 py-1 rounded-full text-xs font-bold border border-tertiary/30">
+                    Elevated Risk
+                </div>
+</div>
+</div>
+<!-- Trend Chart Placeholder -->
+<div class="bg-surface-container-low rounded-xl p-5">
+<h3 class="headline text-lg font-bold text-on-surface mb-4">Event Trend (5m intervals)</h3>
+<div class="h-40 w-full flex items-end justify-between gap-1 mt-4">
+<!-- Mock Bars -->
+<div class="w-full flex flex-col justify-end gap-1"><div class="w-full bg-error rounded-t-sm" style="height: 10%"></div><div class="w-full bg-secondary rounded-b-sm" style="height: 40%"></div></div>
+<div class="w-full flex flex-col justify-end gap-1"><div class="w-full bg-error rounded-t-sm" style="height: 0%"></div><div class="w-full bg-secondary rounded-b-sm" style="height: 60%"></div></div>
+<div class="w-full flex flex-col justify-end gap-1"><div class="w-full bg-error rounded-t-sm" style="height: 20%"></div><div class="w-full bg-secondary rounded-b-sm" style="height: 50%"></div></div>
+<div class="w-full flex flex-col justify-end gap-1"><div class="w-full bg-error rounded-t-sm" style="height: 5%"></div><div class="w-full bg-secondary rounded-b-sm" style="height: 70%"></div></div>
+<div class="w-full flex flex-col justify-end gap-1"><div class="w-full bg-error rounded-t-sm" style="height: 0%"></div><div class="w-full bg-secondary rounded-b-sm" style="height: 30%"></div></div>
+<div class="w-full flex flex-col justify-end gap-1"><div class="w-full bg-error rounded-t-sm" style="height: 15%"></div><div class="w-full bg-secondary rounded-b-sm" style="height: 45%"></div></div>
+<div class="w-full flex flex-col justify-end gap-1"><div class="w-full bg-error rounded-t-sm" style="height: 0%"></div><div class="w-full bg-secondary rounded-b-sm" style="height: 20%"></div></div>
+<div class="w-full flex flex-col justify-end gap-1"><div class="w-full bg-error rounded-t-sm" style="height: 30%"></div><div class="w-full bg-secondary rounded-b-sm" style="height: 40%"></div></div>
+<div class="w-full flex flex-col justify-end gap-1"><div class="w-full bg-error rounded-t-sm" style="height: 10%"></div><div class="w-full bg-secondary rounded-b-sm" style="height: 50%"></div></div>
+</div>
+<div class="flex justify-between text-xs text-on-surface-variant mt-2">
+<span>14:30</span>
+<span>14:52</span>
+<span>15:15</span>
+</div>
+</div>
+<!-- Timeline -->
+<div class="bg-surface-container-low rounded-xl p-5">
+<h3 class="headline text-lg font-bold text-on-surface mb-4">Event Timeline</h3>
+<div class="space-y-4">
+<div class="flex items-center gap-4 bg-surface-container-highest p-3 rounded-lg hover:bg-surface-bright transition-colors">
+<span class="text-sm font-medium text-on-surface w-12">15:10</span>
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex-grow">
+<p class="text-sm font-semibold text-on-surface">Safe Swallow</p>
+</div>
+<span class="text-xs text-on-surface-variant bg-surface-dim px-2 py-1 rounded">98% Conf</span>
+</div>
+<div class="flex items-center gap-4 bg-error-container/20 p-3 rounded-lg border border-error/20">
+<span class="text-sm font-medium text-error w-12">15:04</span>
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div class="flex-grow">
+<p class="text-sm font-semibold text-error">Unsafe Swallow Detected</p>
+</div>
+<span class="text-xs text-error bg-error/10 px-2 py-1 rounded">92% Conf</span>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-highest p-3 rounded-lg hover:bg-surface-bright transition-colors">
+<span class="text-sm font-medium text-on-surface w-12">15:02</span>
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex-grow">
+<p class="text-sm font-semibold text-on-surface">Safe Swallow</p>
+</div>
+<span class="text-xs text-on-surface-variant bg-surface-dim px-2 py-1 rounded">95% Conf</span>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-highest p-3 rounded-lg hover:bg-surface-bright transition-colors">
+<span class="text-sm font-medium text-on-surface w-12">14:58</span>
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex-grow">
+<p class="text-sm font-semibold text-on-surface">Safe Swallow</p>
+</div>
+<span class="text-xs text-on-surface-variant bg-surface-dim px-2 py-1 rounded">99% Conf</span>
+</div>
+</div>
+<button class="w-full mt-4 py-2 text-sm text-primary font-medium hover:text-primary-container transition-colors">View Full Timeline</button>
+</div>
+<!-- Action Bar -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+<button class="bg-secondary-container text-on-secondary-container font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 md:col-span-1 shadow-[0_0_15px_rgba(6,187,99,0.2)]">
+<span class="material-symbols-outlined text-sm">share</span>
+                Share via WhatsApp
+            </button>
+<button class="bg-surface-container-highest text-on-surface border border-outline-variant/30 font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-surface-bright transition-colors">
+<span class="material-symbols-outlined text-sm">picture_as_pdf</span>
+                Save PDF
+            </button>
+<button class="bg-surface-container-highest text-on-surface border border-outline-variant/30 font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-surface-bright transition-colors">
+<span class="material-symbols-outlined text-sm">mail</span>
+                Email to Doctor
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-3xl bg-slate-950/80 backdrop-blur-[20px] shadow-[0px_-24px_48px_rgba(0,0,0,0.4)] bg-slate-900 md:hidden">
+<div class="flex justify-around items-center w-full px-4 pt-3 pb-8">
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-slate-800/50 transition-all active:scale-90 duration-150 p-2 rounded-xl">
+<span class="material-symbols-outlined mb-1 text-[24px]">monitoring</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-[0.05em]">Monitor</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-slate-800/50 transition-all active:scale-90 duration-150 p-2 rounded-xl">
+<span class="material-symbols-outlined mb-1 text-[24px]">notifications</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-[0.05em]">Alerts</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-cyan-500/20 text-cyan-400 rounded-2xl px-5 py-2 hover:bg-slate-800/50 transition-all active:scale-90 duration-150">
+<span class="material-symbols-outlined mb-1 text-[24px]" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-[0.05em]">Report</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-slate-800/50 transition-all active:scale-90 duration-150 p-2 rounded-xl">
+<span class="material-symbols-outlined mb-1 text-[24px]">settings</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase tracking-[0.05em]">Settings</span>
+</button>
+</div>
+</nav>
+</body></html>
