@@ -1,6 +1,6 @@
 # DysphagiaGuard
 
-DysphagiaGuard is an offline-first wearable system that detects safe/unsafe swallowing events using an ESP32 hardware device with sensors, connected locally to this Jetpack Compose Android app.
+DysphagiaGuard is an offline-first wearable system that detects safe/unsafe swallowing events using an ESP32 hardware device with sensors, connected locally to a comprehensive Flutter mobile application with a built-in AI Assistant (Aegis Medical).
 
 ## Hardware Components (ESP32)
 - **ESP32 DevKit V1** (Microcontroller & WiFi AP)
@@ -26,16 +26,17 @@ DysphagiaGuard is an offline-first wearable system that detects safe/unsafe swal
 3. Connect your ESP32 to your computer via USB.
 4. Build and Upload the firmware using PlatformIO.
 
-### Android Application
-1. Open the `android/` directory in Android Studio.
-2. Sync Project with Gradle Files.
-3. Build the APK via `Build > Build Bundle(s) / APK(s) > Build APK(s)`.
-4. Sideload the generated APK onto any Android 7.0+ device (API 24+).
+### Flutter Application
+1. Ensure you have the Flutter SDK installed.
+2. Open the `dysphagiaguard_app/` directory.
+3. Run `flutter pub get` to install dependencies.
+4. Run the app on an emulator or connected device via `flutter run`.
 
 ## Running the Demo
 1. Power on the ESP32 device. It will start a WiFi Hotspot named **DysphagiaGuard-AP**.
-2. Launch the Android app.
-3. The app will attempt to connect to the ESP32 hotspot automatically. If it fails, follow the prompt to connect via WiFi settings.
+2. Launch the Flutter app.
+3. The app will attempt to connect to the ESP32 hotspot automatically.
 4. Enter Patient Setup details and start monitoring.
-5. Provide a physical "unsafe" signal to the device sensors to trigger an alert. The app will vibrate, update the screen, and track the event.
-6. End the session to generate and share the PDF report.
+5. Provide a physical "unsafe" signal to the device sensors to trigger an alert.
+6. Use the new **Aegis Medical AI Assistant** to ask questions or trigger an emergency SOS.
+7. End the session to generate and share the PDF report.
