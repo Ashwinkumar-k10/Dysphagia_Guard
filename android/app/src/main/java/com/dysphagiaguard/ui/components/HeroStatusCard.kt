@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -25,38 +24,44 @@ import com.dysphagiaguard.ui.theme.*
 @Composable
 fun HeroStatusCard(status: String) {
     val targetColor = when (status) {
-        "SAFE" -> PremiumEmerald
+        "SAFE"   -> PremiumEmerald
         "UNSAFE" -> PremiumCrimson
-        else -> DarkSurfaceElevated
+        "COUGH"  -> CoughOrange      // hackathon twist
+        "NOISE"  -> PremiumAmber
+        else     -> DarkSurfaceElevated
     }
 
-    val backgroundColor by animateColorAsState(targetValue = targetColor, animationSpec = tween(500))
+    val statusLabel = when (status) {
+        "SAFE"   -> "✓  SAFE SWALLOW"
+        "UNSAFE" -> "⚠  UNSAFE — RISK"
+        "COUGH"  -> "↑  COUGH DETECTED"   // hackathon twist label
+        "NOISE"  -> "~  NOISE / ARTIFACT"
+        else     -> "◦  MONITORING"
+    }
 
-    // Pulse animation for unsafe
-    val infiniteTransition = rememberInfiniteTransition()
+    val backgroundColor by animateColorAsState(
+        targetValue = targetColor,
+        animationSpec = tween(400),
+        label = "bg"
+    )
+
+    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
     val pulseScale by infiniteTransition.animateFloat(
         initialValue = 1f,
-        targetValue = if (status == "UNSAFE") 1.05f else 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(800),
-            repeatMode = RepeatMode.Reverse
-        )
+        targetValue = when (status) { "UNSAFE" -> 1.06f; "COUGH" -> 1.03f; else -> 1f },
+        animationSpec = infiniteRepeatable(tween(800), RepeatMode.Reverse),
+        label = "scale"
     )
-
-    // Glow Animation
     val glowAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.2f,
-        targetValue = if (status == "UNSAFE") 0.6f else 0.2f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(800),
-            repeatMode = RepeatMode.Reverse
-        )
+        initialValue = 0.15f,
+        targetValue = when (status) { "UNSAFE" -> 0.65f; "COUGH" -> 0.45f; else -> 0.18f },
+        animationSpec = infiniteRepeatable(tween(800), RepeatMode.Reverse),
+        label = "glow"
     )
 
-    // Scale-in animation
-    val scale = remember { Animatable(0.8f) }
+    val scale = remember { Animatable(0.85f) }
     LaunchedEffect(status) {
-        scale.animateTo(1f, animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+        scale.animateTo(1f, spring(Spring.DampingRatioMediumBouncy))
     }
 
     Box(
@@ -67,7 +72,7 @@ fun HeroStatusCard(status: String) {
             .background(
                 brush = Brush.radialGradient(
                     colors = listOf(backgroundColor.copy(alpha = glowAlpha), Color.Transparent),
-                    radius = 500f
+                    radius = 600f
                 ),
                 shape = RoundedCornerShape(32.dp)
             )
@@ -76,24 +81,37 @@ fun HeroStatusCard(status: String) {
             modifier = Modifier.fillMaxSize().padding(8.dp),
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = GlassmorphismBackground),
-            border = BorderStroke(1.dp, GlassmorphismBorder),
+            border = BorderStroke(1.5.dp, targetColor.copy(alpha = 0.4f)),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "CURRENT STATUS",
-                        style = MaterialTheme.typography.bodyMedium.copy(
+                        text = "CLASSIFICATION",
+                        style = MaterialTheme.typography.bodySmall.copy(
                             color = TextSecondary,
                             fontWeight = FontWeight.Bold,
-                            letterSpacing = 2.sp
+                            letterSpacing = 3.sp
                         )
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(Modifier.height(10.dp))
                     Text(
-                        text = status,
-                        style = MaterialTheme.typography.displayLarge.copy(color = targetColor)
+                        text = statusLabel,
+                        style = MaterialTheme.typography.displayMedium.copy(
+                            color = targetColor,
+                            fontWeight = FontWeight.ExtraBold
+                        )
                     )
+                    if (status == "COUGH") {
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            text = "Possible silent aspiration sign",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = CoughOrange.copy(alpha = 0.75f),
+                                letterSpacing = 0.5.sp
+                            )
+                        )
+                    }
                 }
             }
         }

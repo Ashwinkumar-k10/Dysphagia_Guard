@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>DysphagiaGuard — Live Demo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0a0e14;--card:#111822;--border:#1e2d3d;
+  --safe:#00e5a0;--unsafe:#ff3b5c;--noise:#f5a623;--idle:#4a6fa5;
+  --text:#e8f0fe;--sub:#607899;
+  --safe-dim:#00e5a018;--unsafe-dim:#ff3b5c18;--noise-dim:#f5a62318;
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;}
+body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;padding-bottom:40px;}
+
+/* ── Header ── */
+header{padding:22px 20px 0;display:flex;align-items:center;gap:12px;}
+.logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--safe),#0094ff);
+      display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.brand{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;letter-spacing:-0.5px;}
+.brand span{color:var(--safe);}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--idle);margin-left:auto;
+     transition:background .3s,box-shadow .3s;flex-shrink:0;}
+.dot.on{background:var(--safe);box-shadow:0 0 10px var(--safe);}
+
+/* Demo banner */
+.demo-banner{margin:12px 20px 0;background:#1a1200;border:1px solid #f5a62340;border-radius:12px;
+  padding:9px 14px;font-size:11px;color:#f5a623;display:flex;align-items:center;gap:8px;}
+
+/* ── Status bar ── */
+.statusbar{margin:10px 20px 0;background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:11px 16px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--sub);}
+.mode-badge{background:var(--border);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--text);}
+
+/* ── Classification display ── */
+.cls-display{margin:14px 20px 0;border-radius:16px;padding:22px 20px;border:1px solid var(--border);
+  background:var(--card);text-align:center;transition:all .3s;}
+.cls-display.SAFE{border-color:var(--safe);background:var(--safe-dim);}
+.cls-display.UNSAFE{border-color:var(--unsafe);background:var(--unsafe-dim);}
+.cls-display.NOISE{border-color:var(--noise);background:var(--noise-dim);}
+.cls-label{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:2px;transition:color .3s;}
+.cls-sub{font-size:11px;color:var(--sub);margin-top:5px;}
+
+/* ── Waveform ── */
+.wave-wrap{margin:12px 20px 0;background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:12px;overflow:hidden;}
+.wave-lbl{font-size:9px;color:var(--sub);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+canvas{width:100%;height:48px;display:block;border-radius:6px;}
+
+/* ── Metrics ── */
+.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 20px 0;}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;}
+.metric-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;transition:color .3s;}
+.metric-lbl{font-size:9px;color:var(--sub);margin-top:3px;letter-spacing:.5px;}
+
+/* ── Section title ── */
+.section-title{margin:18px 20px 8px;font-size:10px;letter-spacing:2px;color:var(--sub);text-transform:uppercase;}
+
+/* ── Buttons ── */
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 20px;}
+.btn{border:none;border-radius:14px;padding:18px 10px;font-family:'Syne',sans-serif;font-weight:700;
+  font-size:15px;letter-spacing:1px;cursor:pointer;transition:transform .12s,box-shadow .2s;}
+.btn:active{transform:scale(0.95);}
+.btn.active-btn{outline:3px solid white;outline-offset:2px;}
+.btn-safe{background:linear-gradient(135deg,#00e5a0,#00b87c);color:#003322;box-shadow:0 4px 20px #00e5a030;}
+.btn-unsafe{background:linear-gradient(135deg,#ff3b5c,#c41c3a);color:#fff;box-shadow:0 4px 20px #ff3b5c30;}
+.btn-noise{background:linear-gradient(135deg,#f5a623,#c47f0a);color:#2a1a00;box-shadow:0 4px 20px #f5a62330;}
+.btn-idle{background:linear-gradient(135deg,#1e2d3d,#2a3d52);color:var(--sub);border:1px solid var(--border);}
+.btn .icon{display:block;font-size:24px;margin-bottom:5px;}
+.btn .sub{font-size:10px;font-family:'DM Mono',monospace;font-weight:400;opacity:.7;margin-top:3px;display:block;}
+
+/* ── Mode row ── */
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 20px 0;}
+.btn-mode{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px 10px;
+  font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;color:var(--sub);
+  transition:all .2s;text-align:center;}
+.btn-mode.active{border-color:var(--safe);color:var(--safe);background:var(--safe-dim);}
+.btn-mode:active{transform:scale(0.97);}
+
+/* ── Reset ── */
+.btn-reset{width:calc(100% - 40px);margin:10px 20px 0;background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:13px;font-family:'DM Mono',monospace;font-size:13px;color:var(--sub);
+  cursor:pointer;transition:all .2s;letter-spacing:1px;}
+.btn-reset:active{color:var(--text);border-color:var(--text);}
+
+/* ── Auto-demo toggle ── */
+.auto-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 20px 0;}
+.btn-auto{border:none;border-radius:14px;padding:13px 10px;font-family:'Syne',sans-serif;font-weight:700;
+  font-size:13px;cursor:pointer;transition:all .2s;text-align:center;}
+.btn-auto-start{background:linear-gradient(135deg,#4a6fa5,#2d4a7a);color:var(--text);border:1px solid #4a6fa550;}
+.btn-auto-stop{background:linear-gradient(135deg,#3d1a2a,#5c1a2a);color:#ff6b8a;border:1px solid #ff3b5c50;}
+
+/* ── Counters ── */
+.counters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 20px 0;}
+.counter{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;
+  display:flex;justify-content:space-between;align-items:center;}
+.counter-n{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;transition:all .3s;}
+.counter-n.safe{color:var(--safe);}
+.counter-n.unsafe{color:var(--unsafe);}
+.counter-lbl{font-size:10px;color:var(--sub);text-align:right;letter-spacing:.5px;line-height:1.5;}
+
+/* ── Log ── */
+.log-area{margin:10px 20px 0;background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:12px;max-height:140px;overflow-y:auto;font-size:11px;color:var(--sub);line-height:1.7;}
+.entry{display:flex;gap:8px;}
+.tag.SAFE{color:var(--safe);}.tag.UNSAFE{color:var(--unsafe);}
+.tag.NOISE{color:var(--noise);}.tag.IDLE{color:var(--idle);}.tag.SYS{color:#607899;}
+
+/* ── Pulse animation on unsafe ── */
+@keyframes pulse-unsafe{0%,100%{box-shadow:0 0 0 0 #ff3b5c40;}50%{box-shadow:0 0 0 12px transparent;}}
+.cls-display.UNSAFE{animation:pulse-unsafe 1s ease-out 3;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🫁</div>
+  <div class="brand">Dyspha<span>Guard</span></div>
+  <div class="dot on" id="dot"></div>
+</header>
+
+<div class="demo-banner">⚡ BROWSER DEMO MODE — simulating ESP32 WebSocket data locally</div>
+
+<div class="statusbar">
+  <span id="ws-status">Demo • Simulated ESP32</span>
+  <span class="mode-badge" id="mode-badge">DAY MODE</span>
+  <span style="margin-left:auto;font-size:11px" id="session-lbl">Session #1</span>
+</div>
+
+<div class="cls-display" id="cls-display">
+  <div class="cls-label" id="cls-label" style="color:var(--idle)">MONITORING</div>
+  <div class="cls-sub" id="cls-sub">Awaiting swallow event</div>
+</div>
+
+<!-- Live waveform canvas -->
+<div class="wave-wrap">
+  <div class="wave-lbl">Live Sensor Signal</div>
+  <canvas id="wave" height="48"></canvas>
+</div>
+
+<div class="metrics">
+  <div class="metric">
+    <div class="metric-val" id="m-imu">—</div>
+    <div class="metric-lbl">IMU RMS</div>
+  </div>
+  <div class="metric">
+    <div class="metric-val" id="m-mic">—</div>
+    <div class="metric-lbl">MIC ENV</div>
+  </div>
+  <div class="metric">
+    <div class="metric-val" id="m-conf">—</div>
+    <div class="metric-lbl">CONFIDENCE</div>
+  </div>
+</div>
+
+<div class="section-title">Swallow Classification</div>
+<div class="btn-grid">
+  <button class="btn btn-safe" id="b-safe" onclick="trig('SAFE')">
+    <span class="icon">✅</span>SAFE<span class="sub">Normal swallow</span>
+  </button>
+  <button class="btn btn-unsafe" id="b-unsafe" onclick="trig('UNSAFE')">
+    <span class="icon">⚠️</span>UNSAFE<span class="sub">Aspiration risk</span>
+  </button>
+  <button class="btn btn-noise" id="b-noise" onclick="trig('NOISE')">
+    <span class="icon">〰️</span>NOISE<span class="sub">Artifact / reject</span>
+  </button>
+  <button class="btn btn-idle" id="b-idle" onclick="trig('IDLE')">
+    <span class="icon">🔵</span>IDLE<span class="sub">Standby</span>
+  </button>
+</div>
+
+<div class="section-title">Alert Mode</div>
+<div class="mode-row">
+  <button class="btn-mode active" id="btn-day" onclick="setMode('DAY')">
+    ☀️ Day Mode<br><small style="font-size:10px;font-family:'DM Mono'">Buzzer + LED</small>
+  </button>
+  <button class="btn-mode" id="btn-night" onclick="setMode('NIGHT')">
+    🌙 Night Mode<br><small style="font-size:10px;font-family:'DM Mono'">Vibration only</small>
+  </button>
+</div>
+
+<button class="btn-reset" onclick="doReset()">↺ Reset Session</button>
+
+<div class="section-title">Auto Demo</div>
+<div class="auto-row">
+  <button class="btn-auto btn-auto-start" id="btn-auto-start" onclick="startAuto()">▶ Start Auto-Demo</button>
+  <button class="btn-auto btn-auto-stop" id="btn-auto-stop" onclick="stopAuto()" style="display:none">⏹ Stop Auto-Demo</button>
+</div>
+
+<div class="section-title">Session Counters</div>
+<div class="counters">
+  <div class="counter">
+    <div class="counter-n safe" id="cnt-safe">0</div>
+    <div class="counter-lbl">SAFE<br>SWALLOWS</div>
+  </div>
+  <div class="counter">
+    <div class="counter-n unsafe" id="cnt-unsafe">0</div>
+    <div class="counter-lbl">UNSAFE<br>EVENTS</div>
+  </div>
+</div>
+
+<div class="section-title">Event Log</div>
+<div class="log-area" id="log"></div>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+var state = {
+  classification: 'IDLE',
+  imu_rms: 0, mic_envelope: 0, confidence: 0, duration_ms: 0,
+  session_id: 1, device_mode: 'DAY',
+  total_safe: 0, total_unsafe: 0, system_healthy: true
+};
+var autoTimer = null, heartbeatTimer = null;
+var spikeFrames = 0, spikeCls = null;
+
+var CC = {SAFE:'var(--safe)',UNSAFE:'var(--unsafe)',NOISE:'var(--noise)',IDLE:'var(--idle)'};
+var SUB = {SAFE:'Normal swallow detected',UNSAFE:'⚠️ Aspiration risk!',NOISE:'Artifact — rejected',IDLE:'Awaiting swallow event'};
+
+// ─── Wave canvas ─────────────────────────────────────────────────────────────
+var canvas = document.getElementById('wave');
+var ctx = canvas.getContext('2d');
+var waveData = new Array(200).fill(0.5);
+function resizeCanvas(){canvas.width=canvas.offsetWidth;canvas.height=48;}
+window.addEventListener('resize',resizeCanvas);
+resizeCanvas();
+
+function drawWave(){
+  resizeCanvas();
+  var w=canvas.width, h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  var cls=state.classification;
+  var col=cls==='SAFE'?'#00e5a0':cls==='UNSAFE'?'#ff3b5c':cls==='NOISE'?'#f5a623':'#4a6fa5';
+  ctx.strokeStyle=col;
+  ctx.lineWidth=1.8;
+  ctx.shadowColor=col;
+  ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(var i=0;i<waveData.length;i++){
+    var x=(i/waveData.length)*w;
+    var y=h/2 - waveData[i]*(h*0.42);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+}
+
+function pushWave(imu,mic){
+  var amp=(imu+mic)/2;
+  var noise=(Math.random()-0.5)*0.04;
+  var val=Math.sin(Date.now()*0.025)*(amp*0.7) + Math.sin(Date.now()*0.061)*(amp*0.3) + noise;
+  waveData.shift();
+  waveData.push(val);
+  drawWave();
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function rnd(lo,hi){return lo+(Math.random()*(hi-lo));}
+function g(id){return document.getElementById(id);}
+
+// ─── UI update ───────────────────────────────────────────────────────────────
+function ui(d){
+  Object.assign(state,d);
+  var c=d.classification||'IDLE';
+  g('cls-display').className='cls-display '+(c==='IDLE'?'':c);
+  g('cls-label').textContent=c==='IDLE'?'MONITORING':c;
+  g('cls-label').style.color=CC[c]||CC.IDLE;
+  g('cls-sub').textContent=SUB[c]||'';
+  g('m-imu').textContent=(+d.imu_rms||0).toFixed(3);
+  g('m-imu').style.color=CC[c]||CC.IDLE;
+  g('m-mic').textContent=(+d.mic_envelope||0).toFixed(3);
+  g('m-mic').style.color=CC[c]||CC.IDLE;
+  g('m-conf').textContent=((+d.confidence||0)*100).toFixed(0)+'%';
+  g('m-conf').style.color=CC[c]||CC.IDLE;
+  g('cnt-safe').textContent=d.total_safe||0;
+  g('cnt-unsafe').textContent=d.total_unsafe||0;
+  g('session-lbl').textContent='Session #'+(d.session_id||1);
+  var m=d.device_mode||'DAY';
+  g('mode-badge').textContent=m+' MODE';
+  g('btn-day').classList.toggle('active',m==='DAY');
+  g('btn-night').classList.toggle('active',m==='NIGHT');
+  pushWave(d.imu_rms||0, d.mic_envelope||0);
+}
+
+// ─── Simulate ESP32 broadcast packet ─────────────────────────────────────────
+function makePacket(cls, isSpike){
+  var imu,mic,conf,dur;
+  if(cls==='SAFE'){
+    imu=isSpike?rnd(0.28,0.55):rnd(0.04,0.14);
+    mic=isSpike?rnd(0.26,0.55):rnd(0.02,0.10);
+    conf=isSpike?rnd(0.66,0.88):rnd(0.50,0.64);
+    dur=Math.round(rnd(90,195));
+  }else if(cls==='UNSAFE'){
+    imu=isSpike?rnd(0.60,0.95):rnd(0.10,0.22);
+    mic=isSpike?rnd(0.82,1.10):rnd(0.08,0.22);
+    conf=isSpike?rnd(0.70,0.96):rnd(0.50,0.69);
+    dur=Math.round(rnd(85,195));
+  }else if(cls==='NOISE'){
+    imu=rnd(0.05,0.40); mic=rnd(0.04,0.24);
+    conf=rnd(0.20,0.48); dur=Math.round(rnd(20,79));
+  }else{
+    imu=rnd(0.01,0.07); mic=rnd(0.01,0.05); conf=0; dur=0;
+  }
+  return {
+    classification:cls, imu_rms:imu, mic_envelope:mic,
+    confidence:conf, duration_ms:dur, timestamp:Date.now(),
+    session_id:state.session_id, device_mode:state.device_mode,
+    total_safe:state.total_safe, total_unsafe:state.total_unsafe,
+    system_healthy:true
+  };
+}
+
+// ─── Trigger event (simulates ESP32 processCmd) ───────────────────────────────
+function trig(cls){
+  ['safe','unsafe','noise','idle'].forEach(function(x){g('b-'+x).classList.remove('active-btn');});
+  g('b-'+cls.toLowerCase()).classList.add('active-btn');
+
+  if(cls==='IDLE'){
+    ui(makePacket('IDLE',false));
+    addLog('IDLE','Set to IDLE / Standby');
+    return;
+  }
+
+  if(cls==='SAFE') state.total_safe++;
+  if(cls==='UNSAFE') state.total_unsafe++;
+
+  // 5 spike frames like firmware
+  var frames=0;
+  var spiker=setInterval(function(){
+    ui(makePacket(cls,true));
+    frames++;
+    if(frames>=5){clearInterval(spiker);ui(makePacket(cls,false));}
+  },20);
+
+  addLog(cls,'Event triggered → '+cls+(cls==='UNSAFE'?' ⚠️':''));
+}
+
+// ─── Mode ─────────────────────────────────────────────────────────────────────
+function setMode(m){
+  state.device_mode=m;
+  g('mode-badge').textContent=m+' MODE';
+  g('btn-day').classList.toggle('active',m==='DAY');
+  g('btn-night').classList.toggle('active',m==='NIGHT');
+  addLog('SYS','Mode → '+m);
+}
+
+// ─── Reset ────────────────────────────────────────────────────────────────────
+function doReset(){
+  state.total_safe=0; state.total_unsafe=0;
+  state.session_id++;
+  state.classification='IDLE';
+  ['safe','unsafe','noise','idle'].forEach(function(x){g('b-'+x).classList.remove('active-btn');});
+  ui(makePacket('IDLE',false));
+  addLog('SYS','Session reset → #'+state.session_id);
+}
+
+// ─── Auto-demo ────────────────────────────────────────────────────────────────
+var autoSeq=['SAFE','SAFE','NOISE','UNSAFE','SAFE','NOISE','SAFE','UNSAFE','SAFE','SAFE'];
+var autoIdx=0;
+
+function startAuto(){
+  g('btn-auto-start').style.display='none';
+  g('btn-auto-stop').style.display='';
+  addLog('SYS','Auto-demo started');
+  runNextAuto();
+}
+
+function runNextAuto(){
+  if(!autoTimer&&g('btn-auto-stop').style.display==='none') return;
+  var cls=autoSeq[autoIdx%autoSeq.length];
+  autoIdx++;
+  trig(cls);
+  autoTimer=setTimeout(runNextAuto, 3500+Math.random()*2000);
+}
+
+function stopAuto(){
+  clearTimeout(autoTimer); autoTimer=null;
+  g('btn-auto-stop').style.display='none';
+  g('btn-auto-start').style.display='';
+  addLog('SYS','Auto-demo stopped');
+}
+
+// ─── Heartbeat (simulates 10 Hz firmware broadcast) ──────────────────────────
+setInterval(function(){
+  var p=makePacket(state.classification,false);
+  p.total_safe=state.total_safe;
+  p.total_unsafe=state.total_unsafe;
+  p.session_id=state.session_id;
+  p.device_mode=state.device_mode;
+  ui(p);
+},100);
+
+// ─── Log ──────────────────────────────────────────────────────────────────────
+function addLog(tag,msg){
+  var el=g('log'), d=new Date();
+  var ts=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2);
+  var r=document.createElement('div'); r.className='entry';
+  r.innerHTML='<span class="tag '+tag+'">['+tag+']</span><span>'+ts+' '+msg+'</span>';
+  el.appendChild(r); el.scrollTop=el.scrollHeight;
+  if(el.children.length>80) el.removeChild(el.firstChild);
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+ui(makePacket('IDLE',false));
+addLog('SYS','DysphagiaGuard demo loaded');
+addLog('SYS','Click any classification button or use Auto-Demo');
+drawWave();
+</script>
+</body>
+</html>

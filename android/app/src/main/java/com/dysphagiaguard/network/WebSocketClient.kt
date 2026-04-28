@@ -25,12 +25,19 @@ data class SwallowEventData(
     val micEnvelope: Float = 0f,
     val confidence: Float = 0f,
     val timestamp: Long = 0L,
-    val durationMs: Int = 0
+    val durationMs: Int = 0,
+    val totalSafe: Int = 0,
+    val totalUnsafe: Int = 0,
+    val sessionId: Int = 1,
+    val deviceMode: String = "DAY",
+    val systemHealthy: Boolean = true
 )
 
 class WebSocketClient {
     private val client = OkHttpClient.Builder()
         .pingInterval(5, TimeUnit.SECONDS)
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(0, TimeUnit.SECONDS) // no timeout for WebSocket reads
         .build()
 
     private var webSocket: WebSocket? = null
@@ -46,8 +53,9 @@ class WebSocketClient {
     private var reconnectAttempt = 0
 
     fun connect() {
-        if (_connectionState.value == ConnectionState.CONNECTED || _connectionState.value == ConnectionState.CONNECTING) return
-        
+        if (_connectionState.value == ConnectionState.CONNECTED ||
+            _connectionState.value == ConnectionState.CONNECTING) return
+
         _connectionState.value = ConnectionState.CONNECTING
         val request = Request.Builder().url(wsUrl).build()
         webSocket = client.newWebSocket(request, createWebSocketListener())
@@ -60,48 +68,66 @@ class WebSocketClient {
         reconnectAttempt = 0
     }
 
+    fun send(message: String) {
+        webSocket?.send(message)
+    }
+
     private fun createWebSocketListener() = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
+            Log.d("WS", "Connected to ESP32")
             _connectionState.value = ConnectionState.CONNECTED
             reconnectAttempt = 0
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
+            // Skip PONG responses
+            if (text == "PONG") return
             try {
                 val json = JSONObject(text)
-                if (json.optString("type") == "swallow_event") {
-                    val event = SwallowEventData(
-                        type = json.optString("type"),
-                        classification = json.optString("classification", "IDLE"),
-                        imuRms = json.optDouble("imu_rms", 0.0).toFloat(),
-                        micEnvelope = json.optDouble("mic_envelope", 0.0).toFloat(),
-                        confidence = json.optDouble("confidence", 0.0).toFloat(),
-                        timestamp = json.optLong("timestamp", System.currentTimeMillis()),
-                        durationMs = json.optInt("duration_ms", 0)
-                    )
-                    _latestEvent.value = event
-                }
+                // ✅ FIX: Accept ANY JSON that has a "classification" field.
+                // The old code checked type == "swallow_event" which the ESP32 NEVER sends.
+                // Every ESP32 broadcast goes to /dev/null because of that one wrong check.
+                val classification = json.optString("classification", "IDLE")
+                if (classification.isEmpty()) return
+
+                val event = SwallowEventData(
+                    type = "swallow_event",
+                    classification = classification,
+                    imuRms = json.optDouble("imu_rms", 0.0).toFloat(),
+                    micEnvelope = json.optDouble("mic_envelope", 0.0).toFloat(),
+                    confidence = json.optDouble("confidence", 0.0).toFloat(),
+                    timestamp = json.optLong("timestamp", System.currentTimeMillis()),
+                    durationMs = json.optInt("duration_ms", 0),
+                    totalSafe = json.optInt("total_safe", 0),
+                    totalUnsafe = json.optInt("total_unsafe", 0),
+                    sessionId = json.optInt("session_id", 1),
+                    deviceMode = json.optString("device_mode", "DAY"),
+                    systemHealthy = json.optBoolean("system_healthy", true)
+                )
+                _latestEvent.value = event
+                Log.d("WS", "Event: $classification imu=${event.imuRms} mic=${event.micEnvelope}")
             } catch (e: Exception) {
-                Log.e("WebSocketClient", "Error parsing JSON", e)
+                Log.e("WS", "JSON parse error: ${e.message} | raw: $text")
             }
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+            Log.d("WS", "Closed: $reason")
             _connectionState.value = ConnectionState.DISCONNECTED
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+            Log.e("WS", "Failure: ${t.message}")
             _connectionState.value = ConnectionState.LOST
             scheduleReconnect()
         }
     }
 
     private fun scheduleReconnect() {
-        if (_connectionState.value == ConnectionState.DISCONNECTED) return // manual disconnect
-        
+        if (_connectionState.value == ConnectionState.DISCONNECTED) return
         scope.launch {
-            val delaySeconds = min(2.0.pow(reconnectAttempt).toLong(), 8L)
-            delay(delaySeconds * 1000)
+            val delayMs = min(2.0.pow(reconnectAttempt).toLong(), 8L) * 1000
+            delay(delayMs)
             reconnectAttempt++
             connect()
         }

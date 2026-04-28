@@ -5,6 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.MonitorHeart
+import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -17,18 +18,24 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.dysphagiaguard.ui.theme.*
 
 sealed class BottomNavItem(val route: String, val title: String, val icon: ImageVector) {
-    object Monitor : BottomNavItem("live_monitor", "Monitor", Icons.Default.MonitorHeart)
-    object Alert : BottomNavItem("alert_history", "Alerts", Icons.Default.Warning)
-    object Report : BottomNavItem("daily_report", "Report", Icons.Default.Assessment)
+    object Monitor   : BottomNavItem("live_monitor",   "Monitor",   Icons.Default.MonitorHeart)
+    object Alert     : BottomNavItem("alert_history",  "Alerts",    Icons.Default.Warning)
+    object Report    : BottomNavItem("daily_report",   "Report",    Icons.Default.Assessment)
+    object Assistant : BottomNavItem("ai_assistant",   "AI",        Icons.Default.SmartToy)
 }
 
 @Composable
 fun BottomNavBar(navController: NavController) {
-    val items = listOf(BottomNavItem.Monitor, BottomNavItem.Alert, BottomNavItem.Report)
+    val items = listOf(
+        BottomNavItem.Monitor,
+        BottomNavItem.Alert,
+        BottomNavItem.Report,
+        BottomNavItem.Assistant
+    )
 
     NavigationBar(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(32.dp)),
         containerColor = GlassmorphismBackground,
         contentColor = TextPrimary,
@@ -43,7 +50,7 @@ fun BottomNavBar(navController: NavController) {
                 label = { Text(item.title) },
                 selected = currentRoute == item.route,
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = PremiumTeal,
+                    selectedIconColor = if (item is BottomNavItem.Assistant) PremiumTeal else PremiumTeal,
                     selectedTextColor = PremiumTeal,
                     indicatorColor = GlassmorphismBorder,
                     unselectedIconColor = TextSecondary,
@@ -51,9 +58,7 @@ fun BottomNavBar(navController: NavController) {
                 ),
                 onClick = {
                     navController.navigate(item.route) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
-                        }
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
                     }

@@ -10,6 +10,9 @@ android/app/build/
 android/local.properties
 *.apk
 *.aab
+android-sdk/
+jdk17/
+android/*.txt
 
 # Firmware (PlatformIO)
 firmware/.pio/

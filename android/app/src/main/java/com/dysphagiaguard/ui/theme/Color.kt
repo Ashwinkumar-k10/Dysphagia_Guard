@@ -10,6 +10,7 @@ val PremiumTeal = Color(0xFF00E5FF)
 val PremiumEmerald = Color(0xFF00E676)
 val PremiumCrimson = Color(0xFFFF1744)
 val PremiumAmber = Color(0xFFFFD600)
+val CoughOrange = Color(0xFFFF6D00)   // Hackathon twist: Cough vs. Swallow Classifier
 val RedDanger = Color(0xFFFF1744)
 
 val TextPrimary = Color(0xFFF8FAFC)

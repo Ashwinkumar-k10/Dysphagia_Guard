@@ -122,5 +122,12 @@ fun AppNavGraph(
                 }
             )
         }
+
+        composable("ai_assistant") {
+            AiAssistantScreen(
+                viewModel = monitorViewModel,
+                navController = navController
+            )
+        }
     }
 }
