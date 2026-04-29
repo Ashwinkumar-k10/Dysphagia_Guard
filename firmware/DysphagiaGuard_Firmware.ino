@@ -1,7 +1,8 @@
 /*
- * DysphagiaGuard — ESP32 Firmware (FIXED)
+ * DysphagiaGuard — ESP32 Firmware (SENSOR-REAL)
  * Single-core, timer-driven broadcast, full JSON payload.
  * No FreeRTOS tasks touching WebSocket — fixes "values not updating" bug.
+ * Real sensors: MPU6050 (I2C, SDA=21, SCL=22) + Analog Mic (ADC pin 34)
  */
 
 #include <Arduino.h>
@@ -12,6 +13,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <MPU6050_light.h>        // Install: "MPU6050_light" by rfetick in Arduino Library Manager
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -24,6 +26,15 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define VIBRATION_PIN 26
 #define GREEN_LED     27
 #define RED_LED       14
+
+// ─── Sensor objects ──────────────────────────────────────────────────────────
+MPU6050 mpu(Wire);
+
+// ─── Sensor reading config ───────────────────────────────────────────────────
+#define MIC_SAMPLES        64      // Number of ADC samples per RMS window
+#define MIC_SAMPLE_DELAY   200     // Microseconds between samples (~5kHz effective)
+#define ADC_VREF           3.3f
+#define ADC_RESOLUTION     4095.0f
 
 // ─── WiFi ────────────────────────────────────────────────────────────────────
 const char* AP_SSID = "DysphagiaGuard-AP";
@@ -50,45 +61,113 @@ volatile bool pendingCmd = false;
 char pendingPayload[32]  = {0};
 
 // ─────────────────────────────────────────────────────────────────────────────
-float randF(float lo, float hi) {
-  return lo + ((float)esp_random() / (float)UINT32_MAX) * (hi - lo);
-}
-int randI(int lo, int hi) {
-  return lo + (int)(esp_random() % (uint32_t)(hi - lo + 1));
+// Read real IMU RMS — magnitude of acceleration vector minus gravity baseline
+// Returns value in g units (0.0 = perfectly still)
+// ─────────────────────────────────────────────────────────────────────────────
+float readIMU_RMS() {
+  mpu.update();
+  float ax = mpu.getAccX();
+  float ay = mpu.getAccY();
+  float az = mpu.getAccZ();
+
+  // Subtract gravity component (z-axis when flat) to get motion-only signal
+  // Total acceleration magnitude minus 1g baseline
+  float mag = sqrtf(ax*ax + ay*ay + az*az) - 1.0f;
+  if (mag < 0.0f) mag = -mag;  // absolute value
+  return mag;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Build full JSON and broadcast — called ONLY from loop()
+// Read real Mic envelope — RMS of ADC samples, normalized to 0.0–1.0
+// Uses AC-coupled approach: subtract mean to remove DC bias
+// ─────────────────────────────────────────────────────────────────────────────
+float readMicEnvelope() {
+  long   sum    = 0;
+  int    buf[MIC_SAMPLES];
+
+  // Collect samples
+  for (int i = 0; i < MIC_SAMPLES; i++) {
+    buf[i] = analogRead(MIC_PIN);
+    sum += buf[i];
+    delayMicroseconds(MIC_SAMPLE_DELAY);
+  }
+
+  // DC offset (mean)
+  float mean = (float)sum / MIC_SAMPLES;
+
+  // RMS of AC component
+  float sumSq = 0.0f;
+  for (int i = 0; i < MIC_SAMPLES; i++) {
+    float ac = (float)buf[i] - mean;
+    sumSq += ac * ac;
+  }
+  float rms = sqrtf(sumSq / MIC_SAMPLES);
+
+  // Normalize: max AC swing on 12-bit ADC ≈ 2047 (half of 4095)
+  float normalized = rms / 2047.0f;
+  if (normalized > 1.0f) normalized = 1.0f;
+  return normalized;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Compute confidence from sensor values based on current classification
+// Higher sensor activity + matching pattern → higher confidence
+// ─────────────────────────────────────────────────────────────────────────────
+float computeConfidence(const char* cls, float imu, float mic) {
+  float conf = 0.0f;
+  if (strcmp(cls, "SAFE") == 0) {
+    // Safe swallow: moderate imu + moderate mic, both present
+    float imuScore = (imu > 0.03f && imu < 0.60f) ? 0.8f : 0.4f;
+    float micScore = (mic > 0.02f && mic < 0.60f) ? 0.8f : 0.4f;
+    conf = (imuScore + micScore) / 2.0f;
+  } else if (strcmp(cls, "UNSAFE") == 0) {
+    // Unsafe: high imu OR high mic
+    float imuScore = (imu > 0.10f) ? (imu > 0.50f ? 0.95f : 0.75f) : 0.45f;
+    float micScore = (mic > 0.08f) ? (mic > 0.70f ? 0.95f : 0.75f) : 0.45f;
+    conf = (imuScore * 0.5f) + (micScore * 0.5f);
+  } else if (strcmp(cls, "COUGH") == 0) {
+    // Cough: very high mic, moderate-high imu
+    float micScore = (mic > 0.60f) ? 0.90f : (mic > 0.30f ? 0.70f : 0.40f);
+    float imuScore = (imu > 0.40f) ? 0.85f : (imu > 0.15f ? 0.65f : 0.35f);
+    conf = (micScore * 0.6f) + (imuScore * 0.4f);
+  } else if (strcmp(cls, "NOISE") == 0) {
+    // Noise: low imu but some mic, or very low everything
+    conf = (imu < 0.10f && mic < 0.20f) ? 0.70f : 0.35f;
+  } else {
+    conf = 0.0f;
+  }
+  // Clamp
+  if (conf > 1.0f) conf = 1.0f;
+  if (conf < 0.0f) conf = 0.0f;
+  return conf;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Build full JSON from REAL sensors and broadcast — called ONLY from loop()
 // ─────────────────────────────────────────────────────────────────────────────
 void broadcastState(bool isSpike) {
   float imu, mic, conf;
-  int   dur;
+  int   dur = 0;
   const char* c = curClass;
 
-  if (strcmp(c,"SAFE")==0) {
-    imu  = isSpike ? randF(0.28f,0.55f) : randF(0.04f,0.14f);
-    mic  = isSpike ? randF(0.26f,0.55f) : randF(0.02f,0.10f);
-    conf = isSpike ? randF(0.66f,0.88f) : randF(0.50f,0.64f);
-    dur  = randI(120,195);  // swallow: 120-195ms smooth
-  } else if (strcmp(c,"UNSAFE")==0) {
-    imu  = isSpike ? randF(0.60f,0.95f) : randF(0.10f,0.22f);
-    mic  = isSpike ? randF(0.82f,1.10f) : randF(0.08f,0.22f);
-    conf = isSpike ? randF(0.70f,0.96f) : randF(0.50f,0.69f);
-    dur  = randI(100,200);  // unsafe swallow: similar duration, high amplitude
-  } else if (strcmp(c,"COUGH")==0) {
-    // COUGH: SHORT burst (<80ms), high ZCR proxy (oscillating mic), double-peak
-    // Clinically: explosive diaphragm contraction, turbulent airflow through glottis
-    imu  = isSpike ? randF(0.62f,0.88f) : randF(0.05f,0.12f);
-    mic  = isSpike ? randF(0.78f,1.05f) : randF(0.05f,0.13f);
-    conf = isSpike ? randF(0.72f,0.90f) : randF(0.48f,0.62f);
-    dur  = randI(45,80);    // KEY DISCRIMINATOR: cough < 80ms, swallow > 100ms
-  } else if (strcmp(c,"NOISE")==0) {
-    imu  = randF(0.05f,0.40f);
-    mic  = randF(0.04f,0.24f);
-    conf = randF(0.20f,0.48f);
-    dur  = randI(20,79);
+  if (strcmp(c, "IDLE") == 0 || strcmp(c, "NOISE") == 0) {
+    // For IDLE/NOISE, still read sensors but expect low values
+    imu  = readIMU_RMS();
+    mic  = readMicEnvelope();
+    conf = (strcmp(c, "NOISE") == 0) ? computeConfidence("NOISE", imu, mic) : 0.0f;
+    dur  = 0;
   } else {
-    imu=randF(0.01f,0.07f); mic=randF(0.01f,0.05f); conf=0.0f; dur=0;
+    // For active classifications, read real sensors
+    imu  = readIMU_RMS();
+    mic  = readMicEnvelope();
+    conf = computeConfidence(c, imu, mic);
+
+    // Duration: fixed typical values per class (ms)
+    // Real duration would require event start/end timestamps — set on processCmd trigger
+    if      (strcmp(c,"SAFE")==0)   dur = 150;
+    else if (strcmp(c,"UNSAFE")==0) dur = 160;
+    else if (strcmp(c,"COUGH")==0)  dur = 60;
+    else                             dur = 40;
   }
 
   char buf[384];
@@ -110,18 +189,20 @@ void broadcastState(bool isSpike) {
     totalSafe, totalUnsafe
   );
 
-  ws.textAll(buf);  // ← no ws.count() guard; let AsyncTCP handle empty sends
+  ws.textAll(buf);
 }
 
 void sendStateTo(AsyncWebSocketClient* client) {
+  float imu = readIMU_RMS();
+  float mic = readMicEnvelope();
   char buf[384];
   snprintf(buf, sizeof(buf),
     "{\"classification\":\"%s\","
-    "\"imu_rms\":0.0000,\"mic_envelope\":0.0000,\"confidence\":0.0000,"
+    "\"imu_rms\":%.4f,\"mic_envelope\":%.4f,\"confidence\":0.0000,"
     "\"duration_ms\":0,\"timestamp\":%lu,"
     "\"session_id\":%d,\"device_mode\":\"%s\","
     "\"total_safe\":%d,\"total_unsafe\":%d,\"system_healthy\":true}",
-    curClass, (unsigned long)millis(),
+    curClass, imu, mic, (unsigned long)millis(),
     sessionId, deviceMode.c_str(), totalSafe, totalUnsafe
   );
   client->text(buf);
@@ -134,7 +215,7 @@ void updateOLED(const char* cls) {
   display.clearDisplay();
   
   if (strcmp(cls, "UNSAFE") == 0) {
-    display.fillRect(0, 0, 128, 64, SSD1306_WHITE); // Inverted background for danger
+    display.fillRect(0, 0, 128, 64, SSD1306_WHITE);
     display.setTextColor(SSD1306_BLACK); 
     display.setTextSize(2);
     display.setCursor(15, 25);
@@ -152,13 +233,12 @@ void updateOLED(const char* cls) {
     display.setCursor(20, 20);
     display.print("COUGH");
   }
-  else { // IDLE or NOISE
+  else {
     display.setTextColor(SSD1306_WHITE);
     display.setTextSize(1);
     display.setCursor(0, 0);
     display.print("Mode: ");
     display.print(deviceMode);
-    
     display.setTextSize(2);
     display.setCursor(5, 30);
     display.print("MONITORING");
@@ -167,7 +247,7 @@ void updateOLED(const char* cls) {
 }
 
 void startAlert(const char* cls) {
-  updateOLED(cls); // Show on OLED immediately
+  updateOLED(cls);
   
   if (strcmp(cls,"UNSAFE")==0) {
     if (deviceMode=="DAY") {
@@ -182,12 +262,12 @@ void startAlert(const char* cls) {
       delay(500);
       digitalWrite(VIBRATION_PIN, LOW);
     }
-    delay(1000); // Hold alert text
+    delay(1000);
   } else if (strcmp(cls,"SAFE")==0) {
     digitalWrite(GREEN_LED, HIGH);
     delay(100);
     digitalWrite(GREEN_LED, LOW);
-    delay(500); // Hold alert text
+    delay(500);
   } else if (strcmp(cls,"COUGH")==0) {
     if (deviceMode=="DAY") {
       digitalWrite(BUZZER_PIN, HIGH); delay(50); digitalWrite(BUZZER_PIN, LOW); delay(50);
@@ -196,10 +276,10 @@ void startAlert(const char* cls) {
       digitalWrite(VIBRATION_PIN, HIGH); delay(50); digitalWrite(VIBRATION_PIN, LOW); delay(50);
       digitalWrite(VIBRATION_PIN, HIGH); delay(50); digitalWrite(VIBRATION_PIN, LOW);
     }
-    delay(800); // Hold alert text
+    delay(800);
   }
   
-  updateOLED("IDLE"); // Reset screen after alert
+  updateOLED("IDLE");
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -230,13 +310,15 @@ void processCmd(const char* msg) {
              strcmp(msg,"COUGH")==0 || strcmp(msg,"NOISE")==0 || strcmp(msg,"IDLE")==0) {
     strncpy(curClass, msg, 15);
     if (strcmp(curClass,"IDLE")!=0) {
+      // Broadcast 5 readings rapidly to show sensor spike
       for (int i=0;i<5;i++) { broadcastState(true); delay(20); }
       if (strcmp(curClass,"SAFE")==0)   totalSafe++;
       if (strcmp(curClass,"UNSAFE")==0) totalUnsafe++;
-      // COUGH counts as a distinct event (hackathon: Cough vs. Swallow Classifier)
       totalEvents++;
       prefs.begin("dysguard",false); prefs.putInt("event_count",totalEvents); prefs.end();
-      Serial.printf("[EVENT] %s safe=%d unsafe=%d\n",curClass,totalSafe,totalUnsafe);
+      Serial.printf("[EVENT] %s safe=%d unsafe=%d imu=%.3f mic=%.3f\n",
+                    curClass, totalSafe, totalUnsafe,
+                    readIMU_RMS(), readMicEnvelope());
       broadcastState(false);
       startAlert(curClass);
     }
@@ -266,7 +348,7 @@ void onWsEvent(AsyncWebSocket* srv, AsyncWebSocketClient* client,
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// HTML — served at http://192.168.4.1
+// HTML — served at http://192.168.4.1  (unchanged from original)
 // ─────────────────────────────────────────────────────────────────────────────
 const char INDEX_HTML[] PROGMEM =
 "<!DOCTYPE html><html lang=\"en\"><head>"
@@ -431,6 +513,10 @@ void setup() {
   digitalWrite(GREEN_LED,     LOW);
   digitalWrite(RED_LED,       LOW);
 
+  // Configure ADC for mic pin
+  analogReadResolution(12);          // 12-bit ADC → 0-4095
+  analogSetAttenuation(ADC_11db);    // Full 0–3.3V range
+
   prefs.begin("dysguard", false);
   sessionId   = prefs.getInt("session_id", 0) + 1;
   prefs.putInt("session_id", sessionId);
@@ -440,13 +526,25 @@ void setup() {
   Serial.printf("[NVS] Session #%d  Mode:%s  Events:%d\n",
                 sessionId, deviceMode.c_str(), totalEvents);
 
+  // Init I2C and MPU6050
+  Wire.begin(21, 22);  // SDA=21, SCL=22
+
+  byte mpu_status = mpu.begin();
+  if (mpu_status != 0) {
+    Serial.printf("[MPU6050] Init failed, code %d\n", mpu_status);
+  } else {
+    Serial.println("[MPU6050] OK — calibrating (keep device still)...");
+    delay(1000);
+    mpu.calcOffsets(true, true);  // gyro + accelerometer auto-calibration
+    Serial.println("[MPU6050] Calibration done");
+  }
+
   for (int i=0;i<3;i++){
     digitalWrite(GREEN_LED,HIGH); delay(100);
     digitalWrite(GREEN_LED,LOW);  delay(100);
   }
 
-  // Init OLED with I2C pins (SDA=21, SCL=22)
-  Wire.begin(21, 22);
+  // Init OLED
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println("SSD1306 allocation failed");
   } else {
@@ -491,7 +589,7 @@ void loop() {
     if (strcmp(cmd,"PING") != 0) processCmd(cmd);
   }
 
-  // 2. 10 Hz heartbeat broadcast
+  // 2. 10 Hz heartbeat broadcast (real sensor data)
   if (now - lastBroadcast >= 100) {
     lastBroadcast = now;
     broadcastState(false);
