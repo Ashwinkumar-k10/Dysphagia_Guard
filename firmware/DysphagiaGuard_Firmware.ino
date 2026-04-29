@@ -445,8 +445,8 @@ void setup() {
     digitalWrite(GREEN_LED,LOW);  delay(100);
   }
 
-  // Init OLED with custom I2C pins (SDA=12, SCL=13)
-  Wire.begin(12, 13);
+  // Init OLED with I2C pins (SDA=21, SCL=22)
+  Wire.begin(21, 22);
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println("SSD1306 allocation failed");
   } else {
