@@ -9,6 +9,14 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <Preferences.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET    -1
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // ─── PINS ────────────────────────────────────────────────────────────────────
 #define MIC_PIN       34
@@ -122,7 +130,45 @@ void sendStateTo(AsyncWebSocketClient* client) {
 // ─────────────────────────────────────────────────────────────────────────────
 // Non-blocking hardware alert
 // ─────────────────────────────────────────────────────────────────────────────
+void updateOLED(const char* cls) {
+  display.clearDisplay();
+  
+  if (strcmp(cls, "UNSAFE") == 0) {
+    display.fillRect(0, 0, 128, 64, SSD1306_WHITE); // Inverted background for danger
+    display.setTextColor(SSD1306_BLACK); 
+    display.setTextSize(2);
+    display.setCursor(15, 25);
+    display.print("! UNSAFE !");
+  } 
+  else if (strcmp(cls, "SAFE") == 0) {
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(3);
+    display.setCursor(30, 20);
+    display.print("SAFE");
+  } 
+  else if (strcmp(cls, "COUGH") == 0) {
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(3);
+    display.setCursor(20, 20);
+    display.print("COUGH");
+  }
+  else { // IDLE or NOISE
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(1);
+    display.setCursor(0, 0);
+    display.print("Mode: ");
+    display.print(deviceMode);
+    
+    display.setTextSize(2);
+    display.setCursor(5, 30);
+    display.print("MONITORING");
+  }
+  display.display();
+}
+
 void startAlert(const char* cls) {
+  updateOLED(cls); // Show on OLED immediately
+  
   if (strcmp(cls,"UNSAFE")==0) {
     if (deviceMode=="DAY") {
       digitalWrite(RED_LED, HIGH);
@@ -136,11 +182,24 @@ void startAlert(const char* cls) {
       delay(500);
       digitalWrite(VIBRATION_PIN, LOW);
     }
+    delay(1000); // Hold alert text
   } else if (strcmp(cls,"SAFE")==0) {
     digitalWrite(GREEN_LED, HIGH);
     delay(100);
     digitalWrite(GREEN_LED, LOW);
+    delay(500); // Hold alert text
+  } else if (strcmp(cls,"COUGH")==0) {
+    if (deviceMode=="DAY") {
+      digitalWrite(BUZZER_PIN, HIGH); delay(50); digitalWrite(BUZZER_PIN, LOW); delay(50);
+      digitalWrite(BUZZER_PIN, HIGH); delay(50); digitalWrite(BUZZER_PIN, LOW);
+    } else {
+      digitalWrite(VIBRATION_PIN, HIGH); delay(50); digitalWrite(VIBRATION_PIN, LOW); delay(50);
+      digitalWrite(VIBRATION_PIN, HIGH); delay(50); digitalWrite(VIBRATION_PIN, LOW);
+    }
+    delay(800); // Hold alert text
   }
+  
+  updateOLED("IDLE"); // Reset screen after alert
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -384,6 +443,21 @@ void setup() {
   for (int i=0;i<3;i++){
     digitalWrite(GREEN_LED,HIGH); delay(100);
     digitalWrite(GREEN_LED,LOW);  delay(100);
+  }
+
+  // Init OLED
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println("SSD1306 allocation failed");
+  } else {
+    display.clearDisplay();
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(2);
+    display.setCursor(0, 15);
+    display.println("Dysphagia");
+    display.println("  Guard");
+    display.display();
+    delay(1500);
+    updateOLED("IDLE");
   }
 
   WiFi.softAPConfig(IPAddress(192,168,4,1),IPAddress(192,168,4,1),IPAddress(255,255,255,0));
