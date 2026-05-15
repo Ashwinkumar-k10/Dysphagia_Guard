@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DysphagiaGuard — EthAum Pitch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060810;
+    --surface: #0d1120;
+    --surface2: #131929;
+    --border: rgba(255,255,255,0.06);
+    --accent: #00d4aa;
+    --accent2: #ff6b35;
+    --accent3: #6c8bff;
+    --text: #e8edf5;
+    --muted: #7a8ba0;
+    --danger: #ff4d6d;
+    --warning: #ffb347;
+    --safe: #22d3a0;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,170,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,170,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: rgba(6,8,16,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    padding: 16px 0;
+  }
+  nav .container { display: flex; align-items: center; justify-content: space-between; }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--text); }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-cta {
+    background: var(--accent);
+    color: var(--bg) !important;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 600 !important;
+  }
+  .nav-cta:hover { background: #00b890 !important; color: var(--bg) !important; }
+
+  /* HERO */
+  .hero {
+    padding: 160px 0 100px;
+    position: relative;
+  }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,212,170,0.08);
+    border: 1px solid rgba(0,212,170,0.2);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-eyebrow::before { content: '●'; font-size: 8px; animation: pulse 2s infinite; }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 6vw, 76px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 .highlight {
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 580px;
+    font-weight: 300;
+    line-height: 1.7;
+    margin-bottom: 44px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-actions {
+    display: flex; gap: 14px; align-items: center;
+    animation: fadeUp 0.6s 0.3s ease both;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: #00b890; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,212,170,0.25); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* STATS STRIP */
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 72px;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+  .stat-item {
+    background: var(--surface);
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label { font-size: 12px; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
+
+  /* SECTION HEADERS */
+  section { padding: 80px 0; }
+  .section-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .section-sub { color: var(--muted); max-width: 520px; font-size: 16px; margin-bottom: 48px; }
+
+  /* PROBLEM */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .problem-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .problem-card:hover { border-color: rgba(255,77,109,0.3); }
+  .problem-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--danger);
+  }
+  .problem-card .icon { font-size: 28px; margin-bottom: 12px; }
+  .problem-card .label { font-size: 12px; color: var(--danger); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; }
+  .problem-card .value { font-family: var(--font-display); font-size: 32px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+  .problem-card .desc { font-size: 13px; color: var(--muted); }
+
+  /* SOLUTION */
+  .solution-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px; align-items: start; }
+  .feature-list { display: flex; flex-direction: column; gap: 16px; }
+  .feature-item {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color 0.2s;
+  }
+  .feature-item:hover { border-color: rgba(0,212,170,0.25); }
+  .feature-icon {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    background: rgba(0,212,170,0.1);
+    border: 1px solid rgba(0,212,170,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .feature-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .feature-desc { font-size: 13px; color: var(--muted); }
+
+  /* CLASSIFICATION VISUAL */
+  .classify-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    font-family: 'DM Mono', 'Fira Code', monospace;
+    font-size: 12px;
+  }
+  .classify-header { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .event-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .event-row:last-child { border-bottom: none; }
+  .event-badge {
+    padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+    width: 80px; text-align: center; flex-shrink: 0;
+  }
+  .badge-safe { background: rgba(34,211,160,0.15); color: var(--safe); border: 1px solid rgba(34,211,160,0.3); }
+  .badge-unsafe { background: rgba(255,77,109,0.15); color: var(--danger); border: 1px solid rgba(255,77,109,0.3); }
+  .badge-cough { background: rgba(255,179,71,0.15); color: var(--warning); border: 1px solid rgba(255,179,71,0.3); }
+  .event-signal { flex: 1; }
+  .signal-bars { display: flex; gap: 2px; align-items: flex-end; height: 24px; }
+  .bar { width: 4px; border-radius: 2px; animation: barAnim 1.5s ease-in-out infinite; }
+
+  /* Waveform animation */
+  .waveform {
+    height: 48px; background: var(--surface2); border-radius: 6px; overflow: hidden; position: relative;
+    display: flex; align-items: center; padding: 0 12px;
+  }
+  .wave-svg { width: 100%; height: 100%; }
+
+  /* ARCHITECTURE */
+  .arch-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--muted);
+    overflow-x: auto;
+  }
+  .arch-layer {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .arch-layer-title {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .layer-hw { border-color: rgba(0,212,170,0.3); }
+  .layer-hw .arch-layer-title { color: var(--accent); }
+  .layer-app { border-color: rgba(108,139,255,0.3); }
+  .layer-app .arch-layer-title { color: var(--accent3); }
+  .layer-data { border-color: rgba(255,107,53,0.3); }
+  .layer-data .arch-layer-title { color: var(--accent2); }
+  .arch-arrow { text-align: center; color: var(--muted); margin: 4px 0; font-size: 14px; }
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  }
+
+  /* MARKET */
+  .market-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 48px; }
+  .market-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .market-card:hover { transform: translateY(-4px); border-color: rgba(0,212,170,0.3); }
+  .market-tier { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-price { font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
+  .market-desc { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .market-target { font-size: 12px; color: var(--text); }
+
+  /* FLYWHEEL */
+  .flywheel-container { display: flex; justify-content: center; padding: 40px 0; }
+  .flywheel {
+    width: 500px;
+    max-width: 100%;
+  }
+
+  /* ROADMAP */
+  .roadmap-list { display: flex; flex-direction: column; gap: 0; }
+  .roadmap-item { display: flex; gap: 24px; }
+  .roadmap-left { display: flex; flex-direction: column; align-items: center; }
+  .roadmap-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: var(--bg);
+    flex-shrink: 0;
+    margin-top: 4px;
+    position: relative;
+    z-index: 1;
+  }
+  .roadmap-dot.done { background: var(--accent); }
+  .roadmap-line { width: 2px; flex: 1; background: var(--border); margin: 4px 0; }
+  .roadmap-content { padding-bottom: 36px; flex: 1; }
+  .roadmap-phase { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+  .roadmap-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .roadmap-items { display: flex; flex-direction: column; gap: 6px; }
+  .roadmap-check { font-size: 13px; color: var(--muted); display: flex; gap: 8px; align-items: flex-start; }
+  .roadmap-check::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+
+  /* TEAM */
+  .team-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 600px; }
+  .team-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    transition: border-color 0.2s;
+  }
+  .team-card:hover { border-color: rgba(0,212,170,0.3); }
+  .team-avatar {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 20px; font-weight: 800;
+    color: var(--bg);
+    margin-bottom: 16px;
+  }
+  .team-name { font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .team-role { font-size: 12px; color: var(--accent); font-weight: 500; margin-bottom: 8px; }
+  .team-inst { font-size: 12px; color: var(--muted); }
+  .team-skills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .skill-tag { font-size: 11px; padding: 3px 8px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 4px; color: var(--muted); }
+
+  /* CTA */
+  .cta-section {
+    padding: 100px 0;
+    text-align: center;
+    position: relative;
+  }
+  .cta-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 300px;
+    background: radial-gradient(ellipse, rgba(0,212,170,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-title { font-family: var(--font-display); font-size: clamp(32px, 5vw, 56px); font-weight: 800; letter-spacing: -1.5px; margin-bottom: 20px; }
+  .cta-sub { font-size: 17px; color: var(--muted); max-width: 480px; margin: 0 auto 40px; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  @keyframes barAnim {
+    0%, 100% { height: 30%; opacity: 0.4; }
+    50% { height: 100%; opacity: 1; }
+  }
+  @keyframes waveMove {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* SCROLL REVEAL */
+  .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .problem-grid { grid-template-columns: 1fr; }
+    .solution-layout { grid-template-columns: 1fr; }
+    .market-grid { grid-template-columns: 1fr; }
+    .team-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+
+  /* Live signal animation */
+  .live-indicator {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--safe); font-weight: 500;
+  }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--safe); animation: pulse 1.5s infinite; }
+
+  /* Divider */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <div class="nav-logo">Dysphagia<span>Guard</span></div>
+    <div class="nav-links">
+      <a href="#problem">Problem</a>
+      <a href="#solution">Solution</a>
+      <a href="#market">Market</a>
+      <a href="#team">Team</a>
+      <a href="https://github.com/Ashwinkumar-k10/Dysphagia_Guard" target="_blank" class="nav-cta">GitHub →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">
+      <span>EthAum Healthcare MVP 2025</span>
+    </div>
+    <h1>
+      Every unsafe swallow<br/>
+      <span class="highlight">detected in real-time.</span>
+    </h1>
+    <p class="hero-sub">
+      DysphagiaGuard is an AI-assisted neck wearable that continuously classifies swallowing events — protecting 8M+ dysphagia patients in India from silent aspiration and preventable pneumonia.
+    </p>
+    <div class="hero-actions">
+      <a href="https://github.com/Ashwinkumar-k10/Dysphagia_Guard" class="btn-primary" target="_blank">
+        View on GitHub ↗
+      </a>
+      <a href="#solution" class="btn-ghost">See How It Works →</a>
+      <div class="live-indicator">
+        <div class="live-dot"></div>
+        Live MVP — Built in 14 hours
+      </div>
+    </div>
+
+    <div class="stats-strip">
+      <div class="stat-item">
+        <div class="stat-num">8M+</div>
+        <div class="stat-label">Dysphagia patients in India</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">₹1,000</div>
+        <div class="stat-label">Hardware BOM cost</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">10Hz</div>
+        <div class="stat-label">Real-time classification rate</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">₹2,400Cr</div>
+        <div class="stat-label">India TAM</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">The Problem</div>
+      <h2 class="section-title">Silent aspiration kills.<br/>Current tools are episodic.</h2>
+      <p class="section-sub">Dysphagia patients aspirate silently between clinical visits with no detection, no alerts, no protection.</p>
+    </div>
+    <div class="problem-grid reveal">
+      <div class="problem-card">
+        <div class="icon">🏥</div>
+        <div class="label">Current Gold Standard</div>
+        <div class="value">₹25,000</div>
+        <div class="desc">Cost per Videofluoroscopy (VFSS) session — episodic, radiation-intensive, available only in tertiary hospitals</div>
+      </div>
+      <div class="problem-card">
+        <div class="icon">💀</div>
+        <div class="label">Mortality Risk</div>
+        <div class="value">20–30%</div>
+        <div class="desc">Aspiration pneumonia mortality rate — the direct outcome of undetected silent aspiration events</div>
+      </div>
+      <div class="problem-card">
+        <div class="icon">🧠</div>
+        <div class="label">Stroke Survivors</div>
+        <div class="value">~50%</div>
+        <div class="desc">Of stroke survivors develop dysphagia. Most are discharged home with no continuous monitoring whatsoever</div>
+      </div>
+      <div class="problem-card">
+        <div class="icon">⏰</div>
+        <div class="label">Zero Protection</div>
+        <div class="value">24/7</div>
+        <div class="desc">Gap in protection between clinical visits. Aspiration events happen at every meal — 3+ times per day</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">The Solution</div>
+      <h2 class="section-title">Continuous. Non-invasive.<br/>₹1,000 hardware.</h2>
+      <p class="section-sub">A neck-worn dual-sensor wearable + Android clinical dashboard that never stops monitoring.</p>
+    </div>
+    <div class="solution-layout reveal">
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-icon">🎯</div>
+          <div>
+            <div class="feature-title">3-Class Real-Time Detection</div>
+            <div class="feature-desc">ESP32 classifies every swallow as SAFE / UNSAFE / COUGH at 10Hz with sub-100ms latency using dual-sensor fusion (IMU + microphone)</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">📱</div>
+          <div>
+            <div class="feature-title">Clinical-Grade Android Dashboard</div>
+            <div class="feature-desc">Jetpack Compose + MVVM app with live waveform, session history, PDF export, and caregiver alerts. Works entirely offline — no cloud dependency.</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🤖</div>
+          <div>
+            <div class="feature-title">AI Clinical Assistant</div>
+            <div class="feature-desc">Reads live session data and generates contextual guidance. Issues stop-feeding warnings for non-medical caregivers when risk threshold is exceeded.</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🚨</div>
+          <div>
+            <div class="feature-title">Multi-Layer Alerting</div>
+            <div class="feature-desc">Haptic + visual + SMS fallback after 3 consecutive unsafe events. Bypasses Android background restrictions — alert always reaches the caregiver.</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">📊</div>
+          <div>
+            <div class="feature-title">PDF Clinical Reports</div>
+            <div class="feature-desc">Session summaries and trend reports exportable to PDF — designed for Speech-Language Pathologists to review between clinical visits.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="classify-box reveal">
+          <div class="classify-header">🔬 Classification Engine — Live Signal Output</div>
+
+          <div style="margin-bottom: 16px;">
+            <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px; letter-spacing: 0.5px;">FEATURE EXTRACTION (50ms window)</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+              <div style="background: var(--surface2); padding: 10px; border-radius: 6px; text-align: center;">
+                <div style="color: var(--accent); font-size: 16px; font-weight: 700;" id="imu-val">0.62</div>
+                <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">IMU RMS</div>
+              </div>
+              <div style="background: var(--surface2); padding: 10px; border-radius: 6px; text-align: center;">
+                <div style="color: var(--accent3); font-size: 16px; font-weight: 700;" id="mic-val">287</div>
+                <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">Mic Env</div>
+              </div>
+              <div style="background: var(--surface2); padding: 10px; border-radius: 6px; text-align: center;">
+                <div style="color: var(--warning); font-size: 16px; font-weight: 700;" id="zcr-val">0.08</div>
+                <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">ZCR</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px; letter-spacing: 0.5px;">CLASSIFICATION LOGIC</div>
+            <div class="event-row">
+              <div class="event-badge badge-safe">SAFE ✓</div>
+              <div class="event-signal" style="font-size: 11px; color: var(--muted);">IMU moderate · Mic low-mid · Dur 100-200ms · ZCR low</div>
+            </div>
+            <div class="event-row">
+              <div class="event-badge badge-unsafe">UNSAFE ⚠</div>
+              <div class="event-signal" style="font-size: 11px; color: var(--muted);">IMU high · Mic high · Dur 100-200ms · ZCR low → wet gurgle</div>
+            </div>
+            <div class="event-row">
+              <div class="event-badge badge-cough">COUGH 🟠</div>
+              <div class="event-signal" style="font-size: 11px; color: var(--muted);">IMU very high · Mic high · Dur &lt;80ms · ZCR HIGH → aspiration reflex</div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px; letter-spacing: 0.5px;">SESSION TOTALS</div>
+            <div style="display: flex; gap: 12px;">
+              <div style="flex: 1; background: rgba(34,211,160,0.08); border: 1px solid rgba(34,211,160,0.2); border-radius: 6px; padding: 10px; text-align: center;">
+                <div style="color: var(--safe); font-size: 20px; font-weight: 700;" id="safe-cnt">4</div>
+                <div style="font-size: 10px; color: var(--muted);">SAFE</div>
+              </div>
+              <div style="flex: 1; background: rgba(255,77,109,0.08); border: 1px solid rgba(255,77,109,0.2); border-radius: 6px; padding: 10px; text-align: center;">
+                <div style="color: var(--danger); font-size: 20px; font-weight: 700;" id="unsafe-cnt">2</div>
+                <div style="font-size: 10px; color: var(--muted);">UNSAFE</div>
+              </div>
+              <div style="flex: 1; background: rgba(255,179,71,0.08); border: 1px solid rgba(255,179,71,0.2); border-radius: 6px; padding: 10px; text-align: center;">
+                <div style="color: var(--warning); font-size: 20px; font-weight: 700;" id="cough-cnt">1</div>
+                <div style="font-size: 10px; color: var(--muted);">COUGH</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 14px; padding: 10px 14px; background: rgba(0,212,170,0.06); border-radius: 6px; font-size: 11px; color: var(--muted);">
+            <span style="color: var(--accent);">●</span> Live simulation · WebSocket JSON broadcast at 100ms · <span id="event-label" style="color: var(--safe);">SAFE</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARCHITECTURE -->
+    <div style="margin-top: 48px;" class="reveal">
+      <div class="section-tag">System Architecture</div>
+      <h3 style="font-family: var(--font-display); font-size: 24px; font-weight: 700; margin-bottom: 24px;">Full-stack IoT pipeline, on-device</h3>
+      <div class="arch-diagram">
+        <div class="arch-layer layer-hw">
+          <div class="arch-layer-title">Hardware Layer (ESP32)</div>
+          <div class="chip-row">
+            <span class="chip">MPU6050 IMU (I2C)</span>
+            <span class="chip">Electret Mic (ADC)</span>
+            <span class="chip">20Hz windowed loop</span>
+            <span class="chip">IMU RMS + Mic Envelope + ZCR</span>
+            <span class="chip">Threshold Classifier</span>
+            <span class="chip">WiFi AP (192.168.4.1)</span>
+            <span class="chip">AsyncWebSocket Server</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↕ JSON WebSocket · ws://192.168.4.1/ws · 100ms broadcast</div>
+        <div class="arch-layer layer-app">
+          <div class="arch-layer-title">Android Application (Kotlin)</div>
+          <div class="chip-row">
+            <span class="chip">OkHttp3 WebSocket</span>
+            <span class="chip">MVVM + StateFlow</span>
+            <span class="chip">Jetpack Compose</span>
+            <span class="chip">Material 3</span>
+            <span class="chip">AI Clinical Assistant</span>
+            <span class="chip">Haptic + SMS Alerts</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↕ SQLite via Room ORM</div>
+        <div class="arch-layer layer-data">
+          <div class="arch-layer-title">Data & Output Layer</div>
+          <div class="chip-row">
+            <span class="chip">Room Database (SQLite)</span>
+            <span class="chip">Session History</span>
+            <span class="chip">Patient Profiles</span>
+            <span class="chip">iTextG PDF Export</span>
+            <span class="chip">SLP Clinical Reports</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- MARKET & BUSINESS -->
+<section id="market">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Business Model</div>
+      <h2 class="section-title">Three revenue streams.<br/>₹2,400Cr addressable market.</h2>
+      <p class="section-sub">B2B hospital SaaS, B2B elder care subscriptions, and B2C home caregiver retail — India-first.</p>
+    </div>
+    <div class="market-grid reveal">
+      <div class="market-card">
+        <div style="font-size: 32px; margin-bottom: 12px;">🏥</div>
+        <div class="market-tier">Tier 1 — Enterprise</div>
+        <div class="market-price">₹4,999/mo</div>
+        <div class="market-desc">Per ICU / neurology ward. Device leased, SaaS license + dashboard</div>
+        <div class="market-target">Hospitals · ICUs · Rehab wards</div>
+      </div>
+      <div class="market-card">
+        <div style="font-size: 32px; margin-bottom: 12px;">👵</div>
+        <div class="market-tier">Tier 2 — Elder Care</div>
+        <div class="market-price">₹999/mo</div>
+        <div class="market-desc">Per patient. Hardware sold once (₹3,999), subscription continues</div>
+        <div class="market-target">Nursing homes · Assisted living</div>
+      </div>
+      <div class="market-card">
+        <div style="font-size: 32px; margin-bottom: 12px;">🏠</div>
+        <div class="market-tier">Tier 3 — Consumer</div>
+        <div class="market-price">₹7,999</div>
+        <div class="market-desc">Device purchase + ₹299–599/mo app. Hospital discharge referral model</div>
+        <div class="market-target">Home caregivers · Families</div>
+      </div>
+    </div>
+
+    <!-- Flywheel -->
+    <div class="reveal" style="margin-top: 16px;">
+      <div class="section-tag">Data Flywheel</div>
+      <h3 style="font-family: var(--font-display); font-size: 24px; font-weight: 700; margin-bottom: 24px;">The moat grows with every swallow</h3>
+      <div style="display: flex; gap: 0; align-items: stretch; flex-wrap: wrap; gap: 2px;">
+        <div style="flex: 1; min-width: 160px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 8px;">👤</div>
+          <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px;">More Patients</div>
+          <div style="font-size: 11px; color: var(--muted);">Larger labeled swallowing dataset</div>
+        </div>
+        <div style="display: flex; align-items: center; padding: 0 8px; color: var(--accent); font-size: 18px;">→</div>
+        <div style="flex: 1; min-width: 160px; background: var(--surface); border: 1px solid rgba(0,212,170,0.2); border-radius: 8px; padding: 20px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 8px;">🧠</div>
+          <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px;">Better ML Model</div>
+          <div style="font-size: 11px; color: var(--muted);">Personalized adaptive baselines</div>
+        </div>
+        <div style="display: flex; align-items: center; padding: 0 8px; color: var(--accent); font-size: 18px;">→</div>
+        <div style="flex: 1; min-width: 160px; background: var(--surface); border: 1px solid rgba(0,212,170,0.2); border-radius: 8px; padding: 20px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 8px;">📈</div>
+          <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px;">Better Outcomes</div>
+          <div style="font-size: 11px; color: var(--muted);">Hospital endorsements + referrals</div>
+        </div>
+        <div style="display: flex; align-items: center; padding: 0 8px; color: var(--accent); font-size: 18px;">→</div>
+        <div style="flex: 1; min-width: 160px; background: var(--surface); border: 1px solid rgba(0,212,170,0.3); border-radius: 8px; padding: 20px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 8px;">🔄</div>
+          <div style="font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 4px;">Repeat</div>
+          <div style="font-size: 11px; color: var(--muted);">Data moat competitors can't replicate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Projections -->
+    <div style="margin-top: 48px;" class="reveal">
+      <div class="section-tag">Financial Projections</div>
+      <h3 style="font-family: var(--font-display); font-size: 24px; font-weight: 700; margin-bottom: 24px;">3-Year Revenue Trajectory</h3>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px;">
+          <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">Year 1</div>
+          <div style="font-family: var(--font-display); font-size: 32px; font-weight: 800; color: var(--accent); margin-bottom: 4px;">₹20.4L</div>
+          <div style="font-size: 13px; color: var(--muted);">200 active patients · Bangalore pilots</div>
+        </div>
+        <div style="background: var(--surface); border: 1px solid rgba(0,212,170,0.2); border-radius: 12px; padding: 28px;">
+          <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">Year 2</div>
+          <div style="font-family: var(--font-display); font-size: 32px; font-weight: 800; color: var(--accent); margin-bottom: 4px;">₹1.62Cr</div>
+          <div style="font-size: 13px; color: var(--muted);">1,500 patients · Elder care + home launch</div>
+        </div>
+        <div style="background: var(--surface); border: 1px solid rgba(0,212,170,0.3); border-radius: 12px; padding: 28px;">
+          <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">Year 3</div>
+          <div style="font-family: var(--font-display); font-size: 32px; font-weight: 800; color: var(--accent); margin-bottom: 4px;">₹6.84Cr</div>
+          <div style="font-size: 13px; color: var(--muted);">6,000 patients · CDSCO certified · EHR integrated</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ROADMAP -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Roadmap</div>
+      <h2 class="section-title">From MVP to<br/>clinical scale.</h2>
+    </div>
+    <div class="roadmap-list reveal">
+      <div class="roadmap-item">
+        <div class="roadmap-left">
+          <div class="roadmap-dot done"></div>
+          <div class="roadmap-line"></div>
+        </div>
+        <div class="roadmap-content">
+          <div class="roadmap-phase">Phase 1 — ✅ Complete</div>
+          <div class="roadmap-title">MVP Hackathon Build</div>
+          <div class="roadmap-items">
+            <div class="roadmap-check">ESP32 firmware with dual-sensor fusion + WebSocket server</div>
+            <div class="roadmap-check">Android MVVM app with Room DB + PDF export + AI assistant</div>
+            <div class="roadmap-check">Demo mode + bi-directional hardware sync</div>
+            <div class="roadmap-check">End-to-end pipeline validated in 14-hour sprint</div>
+          </div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-left">
+          <div class="roadmap-dot"></div>
+          <div class="roadmap-line"></div>
+        </div>
+        <div class="roadmap-content">
+          <div class="roadmap-phase">Phase 2 — Q3 2025</div>
+          <div class="roadmap-title">Clinical Validation</div>
+          <div class="roadmap-items">
+            <div class="roadmap-check">IRB-approved pilot with 20 patients at Bangalore hospital</div>
+            <div class="roadmap-check">Sensitivity/specificity benchmarking vs. VFSS gold standard</div>
+            <div class="roadmap-check">Adaptive threshold calibration per patient</div>
+            <div class="roadmap-check">CDSCO Class B pre-submission consultation</div>
+          </div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-left">
+          <div class="roadmap-dot"></div>
+          <div class="roadmap-line"></div>
+        </div>
+        <div class="roadmap-content">
+          <div class="roadmap-phase">Phase 3 — Q4 2025</div>
+          <div class="roadmap-title">ML Upgrade + First Revenue</div>
+          <div class="roadmap-items">
+            <div class="roadmap-check">Replace rule-based classifier with on-device TFLite model</div>
+            <div class="roadmap-check">Self-learning personalized baselines from session history</div>
+            <div class="roadmap-check">Early aspiration prediction (pre-event trend detection)</div>
+            <div class="roadmap-check">First 3 hospital contracts + elder care pilot</div>
+          </div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-left">
+          <div class="roadmap-dot"></div>
+        </div>
+        <div class="roadmap-content">
+          <div class="roadmap-phase">Phase 4 — 2026</div>
+          <div class="roadmap-title">Platform Scale</div>
+          <div class="roadmap-items">
+            <div class="roadmap-check">Multi-patient ward dashboard + EHR/FHIR API integration</div>
+            <div class="roadmap-check">CDSCO Class B medical device certification</div>
+            <div class="roadmap-check">CE Mark + FDA 510(k) pathway initiation</div>
+            <div class="roadmap-check">Southeast Asia expansion via EthAum Singapore network</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Team</div>
+      <h2 class="section-title">Built by engineers.<br/>Designed for clinicians.</h2>
+    </div>
+    <div class="team-grid reveal">
+      <div class="team-card">
+        <div class="team-avatar">AK</div>
+        <div class="team-name">Ashwinkumar K</div>
+        <div class="team-role">Hardware + Firmware + Android</div>
+        <div class="team-inst">Chennai Institute of Technology, Bangalore · ECE Year 2</div>
+        <div class="team-skills">
+          <span class="skill-tag">ESP32 / Arduino</span>
+          <span class="skill-tag">Kotlin / Jetpack Compose</span>
+          <span class="skill-tag">ROS 2</span>
+          <span class="skill-tag">Deep Learning</span>
+          <span class="skill-tag">VLSI / EDA</span>
+        </div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar" style="background: linear-gradient(135deg, var(--accent3), var(--accent2));">DK</div>
+        <div class="team-name">Dhamarai K</div>
+        <div class="team-role">ML Pipeline + Signal Processing</div>
+        <div class="team-inst">Chennai Institute of Technology, Bangalore · ECE Year 2</div>
+        <div class="team-skills">
+          <span class="skill-tag">Python / TensorFlow</span>
+          <span class="skill-tag">Signal Processing</span>
+          <span class="skill-tag">Computer Vision</span>
+          <span class="skill-tag">Geospatial ML</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-glow"></div>
+    <div class="reveal">
+      <div class="section-tag">EthAum Competition</div>
+      <h2 class="cta-title">Ready to protect<br/>every swallow.</h2>
+      <p class="cta-sub">DysphagiaGuard is an India-first healthcare deep tech MVP addressing a ₹2,400Cr underserved market with a ₹1,000 hardware solution.</p>
+      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+        <a href="https://github.com/Ashwinkumar-k10/Dysphagia_Guard" class="btn-primary" target="_blank">
+          View GitHub Repo ↗
+        </a>
+        <a href="mailto:pgupta@ethaum.com" class="btn-ghost">Submit to EthAum →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    DysphagiaGuard — Built for EthAum Venture Partners Healthcare MVP 2025 · Team: Ashwinkumar K + Dhamarai K · Chennai Institute of Technology
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Live signal simulation
+const events = [
+  { label: 'SAFE', imu: () => (0.3 + Math.random()*0.3).toFixed(2), mic: () => Math.floor(120+Math.random()*180), zcr: () => (0.03+Math.random()*0.05).toFixed(2), color: '#22d3a0' },
+  { label: 'SAFE', imu: () => (0.3 + Math.random()*0.3).toFixed(2), mic: () => Math.floor(100+Math.random()*150), zcr: () => (0.02+Math.random()*0.04).toFixed(2), color: '#22d3a0' },
+  { label: 'UNSAFE', imu: () => (0.75 + Math.random()*0.2).toFixed(2), mic: () => Math.floor(350+Math.random()*150), zcr: () => (0.04+Math.random()*0.04).toFixed(2), color: '#ff4d6d' },
+  { label: 'SAFE', imu: () => (0.35 + Math.random()*0.25).toFixed(2), mic: () => Math.floor(130+Math.random()*120), zcr: () => (0.03+Math.random()*0.03).toFixed(2), color: '#22d3a0' },
+  { label: 'COUGH', imu: () => (0.9 + Math.random()*0.1).toFixed(2), mic: () => Math.floor(400+Math.random()*100), zcr: () => (0.18+Math.random()*0.1).toFixed(2), color: '#ffb347' },
+];
+
+let idx = 0, safe = 4, unsafe = 2, cough = 1;
+
+setInterval(() => {
+  const ev = events[idx % events.length];
+  idx++;
+  document.getElementById('imu-val').textContent = ev.imu();
+  document.getElementById('mic-val').textContent = ev.mic();
+  document.getElementById('zcr-val').textContent = ev.zcr();
+  const lbl = document.getElementById('event-label');
+  lbl.textContent = ev.label;
+  lbl.style.color = ev.color;
+  if (ev.label === 'SAFE') safe++;
+  else if (ev.label === 'UNSAFE') unsafe++;
+  else cough++;
+  document.getElementById('safe-cnt').textContent = safe;
+  document.getElementById('unsafe-cnt').textContent = unsafe;
+  document.getElementById('cough-cnt').textContent = cough;
+}, 1800);
+</script>
+
+</body>
+</html>
